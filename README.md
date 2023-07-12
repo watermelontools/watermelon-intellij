@@ -6,7 +6,7 @@
 
 ## Template ToDo list
 - [x] Create a new [IntelliJ Platform Plugin Template][template] project.
-- [ ] Get familiar with the [template documentation][template].
+- [x] Get familiar with the [template documentation][template].
 - [ ] Adjust the [pluginGroup](./gradle.properties), [plugin ID](./src/main/resources/META-INF/plugin.xml) and [sources package](./src/main/kotlin).
 - [ ] Adjust the plugin description in `README` (see [Tips][docs:plugin-description])
 - [ ] Review the [Legal Agreements](https://plugins.jetbrains.com/docs/marketplace/legal-agreements.html?from=IJPluginTemplate).
@@ -17,14 +17,20 @@
 - [ ] Click the <kbd>Watch</kbd> button on the top of the [IntelliJ Platform Plugin Template][template] to be notified about releases containing new features and fixes.
 
 <!-- Plugin description -->
-This Fancy IntelliJ Platform Plugin is going to be your implementation of the brilliant ideas that you have.
+**Watermelon helps your team merge Pull Requests With Business Value.** Our set of plug-ins help you understand business context, improve your coding velocity and merge PRs like a breeze.
 
-This specific section is a source for the [plugin.xml](/src/main/resources/META-INF/plugin.xml) file which will be extracted by the [Gradle](/build.gradle.kts) during the build process.
+We've built a search algorithm that indexes the most relevant passive documentation for a given block of code.
+
+To obtain business context in your IDE, use this extension.
+
+To obtain business context in your CI/CD, take a look at our [GitHub Application](https://github.com/apps/watermelon-context)
 
 To keep everything working, do not remove `<!-- ... -->` sections. 
 <!-- Plugin description end -->
 
 ## Installation
+
+**For the Gradle build to be successful make sure you are using Java 17 and Coretto 19 as the Gradle JVM**. 
 
 - Using IDE built-in plugin system:
   

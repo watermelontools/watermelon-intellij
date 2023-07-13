@@ -31,6 +31,7 @@ To keep everything working, do not remove `<!-- ... -->` sections.
 ## Installation
 
 **For the Gradle build to be successful make sure you are using Java 17 and Coretto 19 as the Gradle JVM**. 
+Also, make sure that Git4Idea is installed as a Gradle dependency to run on dev mode
 
 - Using IDE built-in plugin system:
   

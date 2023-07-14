@@ -3,9 +3,10 @@ package com.github.baristageek.watermelonintellij.actions
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.PlatformDataKeys
+import Git4Idea
 
 class GitBlameAction : AnAction() {
-
+    val git = Git4Idea.getInstance();
     override fun actionPerformed(e: AnActionEvent) {
         // get current file
         val editor = e.getRequiredData(PlatformDataKeys.EDITOR)
@@ -21,9 +22,17 @@ class GitBlameAction : AnAction() {
 
     }
 
-     fun gitBlame(filePath: String, start: Int, end: Int) {
+    //  fun gitBlame(filePath: String, start: Int, end: Int) {
+    //      println("selected file, start and end line: $filePath $start $end")
+    //  }
+
+    fun gitBlame(filePath: String, start: Int, end: Int) {
          println("selected file, start and end line: $filePath $start $end")
-     }
+//        val git = Git4Idea.getInstance()
+        val blameResult = git.getBlameForFile(filePath,start, end)
+
+        println("Blame result: $blameResult");
+    }
 
 }
 

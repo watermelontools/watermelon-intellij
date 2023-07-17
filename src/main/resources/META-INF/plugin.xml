@@ -5,6 +5,7 @@
     <vendor>baristageek</vendor>
 
     <depends>com.intellij.modules.platform</depends>
+    <depends>Git4Idea</depends>
 
     <resource-bundle>messages.MyBundle</resource-bundle>
 
@@ -12,7 +13,22 @@
         <toolWindow factoryClass="com.github.baristageek.watermelonintellij.toolWindow.MyToolWindowFactory" id="MyToolWindow"/>
     </extensions>
 
+    <extensions defaultExtensionNs="com.intellij.openapi.editor">
+        <editorMouseMotionListener implementation="com.github.baristageek.watermelonintellij.InlineGitBlameListener"/>
+    </extensions>
+
     <applicationListeners>
         <listener class="com.github.baristageek.watermelonintellij.listeners.MyApplicationActivationListener" topic="com.intellij.openapi.application.ApplicationActivationListener"/>
     </applicationListeners>
+
+    <actions>
+        <action
+                id="EditorBasics.EditorIllustrationAction"
+                class="com.github.baristageek.watermelonintellij.actions.GitBlameAction"
+                text="Run Watermelon"
+                description="Contextualizes code with context from git, messaging, project management, and documentation systems."
+        >
+            <add-to-group group-id="EditorPopupMenu" anchor="first"/>
+        </action>
+    </actions>
 </idea-plugin>

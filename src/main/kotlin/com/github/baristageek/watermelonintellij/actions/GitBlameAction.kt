@@ -27,11 +27,10 @@ class GitBlameAction : AnAction() {
         val project = ProjectManager.getInstance().getOpenProjects()[0]
         val history = git4idea.history.GitFileHistory;
 
-        println("blame result will try to execute here: ")
-//        val blameResult = history.collectHistory(project, filePath, start.toString(), end.toString())
         val blameResult = history.collectHistory(project, filePath)
-
-        println("Blame result: $blameResult");
+        val rangeBlame = blameResult.slice(start..end)
+        
+        println("rangeblame: $rangeBlame");
     }
 
 }

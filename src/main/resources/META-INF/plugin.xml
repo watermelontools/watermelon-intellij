@@ -13,8 +13,12 @@
         <toolWindow factoryClass="com.github.baristageek.watermelonintellij.toolWindow.MyToolWindowFactory" id="MyToolWindow"/>
     </extensions>
 
-    <extensions defaultExtensionNs="com.intellij.openapi.editor">
-        <editorMouseMotionListener implementation="com.github.baristageek.watermelonintellij.InlineGitBlameListener"/>
+<!--    <extensions defaultExtensionNs="com.intellij.openapi.editor">-->
+<!--        <editorMouseMotionListener implementation="com.github.baristageek.watermelonintellij.InlineGitBlameListener"/>-->
+<!--    </extensions>-->
+
+    <extensions defaultExtensionNs="com.intellij">
+        <toolWindow id="WatermelonSidePanel" factoryClass="com.github.baristageek.watermelonintellij.toolWindow.SidePanel"/>
     </extensions>
 
     <applicationListeners>

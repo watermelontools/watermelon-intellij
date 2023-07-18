@@ -3,11 +3,12 @@ package com.github.baristageek.watermelonintellij.actions
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.PlatformDataKeys
-import git4idea.*
 import com.intellij.openapi.project.ProjectManager
 import com.intellij.openapi.vcs.FilePath
-import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.vcsUtil.VcsUtil;
+import com.github.baristageek.watermelonintellij.toolWindow.MyToolWindowFactory
+import com.intellij.openapi.wm.ToolWindowManager
+
 
 class GitBlameAction : AnAction() {
     override fun actionPerformed(e: AnActionEvent) {
@@ -27,10 +28,17 @@ class GitBlameAction : AnAction() {
         val project = ProjectManager.getInstance().getOpenProjects()[0]
         val history = git4idea.history.GitFileHistory;
 
+
         val blameResult = history.collectHistory(project, filePath)
         val rangeBlame = blameResult.slice(start..end)
         
         println("rangeblame: $rangeBlame");
+
+        // open tool window programmatically
+        val toolWindowManager = ToolWindowManager.getInstance(project)
+        val toolWindow = toolWindowManager.getToolWindow("MyToolWindow")
+        ToolWindowManager.getInstance(project).registerToolWindow(toolWindow)
+
     }
 
 }

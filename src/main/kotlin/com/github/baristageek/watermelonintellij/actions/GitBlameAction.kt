@@ -30,6 +30,13 @@ class GitBlameAction : AnAction() {
 
 
         val blameResult = history.collectHistory(project, filePath)
+        val commitHashes = ArrayList<String>()
+        blameResult.forEach {
+            val stringElement = it.toString().split(":")[1]
+            commitHashes.add(stringElement)
+            println("stringElement: $stringElement")
+        }
+
         // TODO: Run a blame range correctly
         // val rangeBlame = blameResult.slice(start..end);
 //        println("rangeblame: $rangeBlame");

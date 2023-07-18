@@ -30,16 +30,11 @@ class GitBlameAction : AnAction() {
 
 
         val blameResult = history.collectHistory(project, filePath)
-        val rangeBlame = blameResult.slice(start..end)
-        
-        println("rangeblame: $rangeBlame");
+        // TODO: Run a blame range correctly
+        // val rangeBlame = blameResult.slice(start..end);
+//        println("rangeblame: $rangeBlame");
 
         // open tool window programmatically
-//        val toolWindowManager = ToolWindowManager.getInstance(project)
-//        val toolWindow = toolWindowManager.getToolWindow("MyToolWindow")
-//        ToolWindowManager.getInstance(project).registerToolWindow(toolWindow)
-
-
         val toolWindowManager = ToolWindowManager.getInstance(project)
         val toolWindow: ToolWindow? = toolWindowManager.getToolWindow("MyToolWindow")
         toolWindow?.show {}

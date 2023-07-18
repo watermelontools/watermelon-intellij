@@ -5,9 +5,9 @@ import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.PlatformDataKeys
 import com.intellij.openapi.project.ProjectManager
 import com.intellij.openapi.vcs.FilePath
-import com.intellij.vcsUtil.VcsUtil;
-import com.github.baristageek.watermelonintellij.toolWindow.MyToolWindowFactory
 import com.intellij.openapi.wm.ToolWindowManager
+import com.intellij.vcsUtil.VcsUtil
+import com.intellij.openapi.wm.ToolWindow
 
 
 class GitBlameAction : AnAction() {
@@ -35,10 +35,14 @@ class GitBlameAction : AnAction() {
         println("rangeblame: $rangeBlame");
 
         // open tool window programmatically
-        val toolWindowManager = ToolWindowManager.getInstance(project)
-        val toolWindow = toolWindowManager.getToolWindow("MyToolWindow")
-        ToolWindowManager.getInstance(project).registerToolWindow(toolWindow)
+//        val toolWindowManager = ToolWindowManager.getInstance(project)
+//        val toolWindow = toolWindowManager.getToolWindow("MyToolWindow")
+//        ToolWindowManager.getInstance(project).registerToolWindow(toolWindow)
 
+
+        val toolWindowManager = ToolWindowManager.getInstance(project)
+        val toolWindow: ToolWindow? = toolWindowManager.getToolWindow("MyToolWindow")
+        toolWindow?.show {}
     }
 
 }

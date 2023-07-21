@@ -14,6 +14,9 @@ import javax.swing.JButton
 import java.awt.Font
 import com.intellij.ui.JBColor
 import java.awt.Color
+import com.github.baristageek.watermelonintellij.actions.GitBlameAction
+import com.intellij.openapi.vcs.FilePath
+
 
 class MyToolWindowFactory : ToolWindowFactory {
     init {
@@ -39,13 +42,13 @@ class MyToolWindowFactory : ToolWindowFactory {
             commitsLabel.foreground = JBColor(Color(0x999999), Color(0x999999))
             add(commitsLabel);
             val mockedCommitHashes = arrayOf(
-                    "abc123def456789ghijklmn0pqrstuvwx",
-                    "def456789ghijklmn0pqrstuvwxabc123",
-                    "789ghijklmn0pqrstuvwxabc123def456",
-                    "ijklmn0pqrstuvwxabc123def456789g",
-                    "mn0pqrstuvwxabc123def456789ghijk",
-                    "rstuvwxabc123def456789ghijklmn0p",
-                    "vwxabc123def456789ghijklmn0pqrstu"
+                "abc123def456789ghijklmn0pqrstuvwx",
+                "def456789ghijklmn0pqrstuvwxabc123",
+                "789ghijklmn0pqrstuvwxabc123def456",
+                "ijklmn0pqrstuvwxabc123def456789g",
+                "mn0pqrstuvwxabc123def456789ghijk",
+                "rstuvwxabc123def456789ghijklmn0p",
+                "vwxabc123def456789ghijklmn0pqrstu"
             )
 
             mockedCommitHashes.forEach { commitHash ->
@@ -55,8 +58,11 @@ class MyToolWindowFactory : ToolWindowFactory {
 //
 //            add(label)
             add(JButton(MyBundle.message("shuffle")).apply {
+                val gitBlameAction = GitBlameAction();
+//                val hashes = gitBlameAction.gitBlame(file, 0, 1);
                 addActionListener {
-                    println("random number retreived from service: " + service.getRandomNumber())
+                    println("toolWindow - gitblameaction: $hashes");
+//                    println("random number retreived from service: " + service.getRandomNumber())
                 }
             })
         }

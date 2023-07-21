@@ -24,10 +24,9 @@ class GitBlameAction : AnAction() {
 
         gitBlame(filePath, startLine, endLine)
     }
-    fun gitBlame(filePath: FilePath, start: Int, end: Int) {
+    fun gitBlame(filePath: FilePath, start: Int, end: Int): ArrayList<String> {
         val project = ProjectManager.getInstance().getOpenProjects()[0]
         val history = git4idea.history.GitFileHistory;
-
 
         val blameResult = history.collectHistory(project, filePath)
         val commitHashes = ArrayList<String>()
@@ -45,6 +44,7 @@ class GitBlameAction : AnAction() {
         val toolWindowManager = ToolWindowManager.getInstance(project)
         val toolWindow: ToolWindow? = toolWindowManager.getToolWindow("MyToolWindow")
         toolWindow?.show {}
+        return (commitHashes);
     }
 
 }

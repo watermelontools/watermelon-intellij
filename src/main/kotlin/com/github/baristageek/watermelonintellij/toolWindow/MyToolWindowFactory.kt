@@ -41,6 +41,8 @@ class MyToolWindowFactory : ToolWindowFactory {
             commitsLabel.font = commitsLabel.font.deriveFont(Font.BOLD)
             commitsLabel.foreground = JBColor(Color(0x999999), Color(0x999999))
             add(commitsLabel);
+
+            // TODO: Run val gitBlameAction = GitBlameAction(); here 
             val mockedCommitHashes = arrayOf(
                 "abc123def456789ghijklmn0pqrstuvwx",
                 "def456789ghijklmn0pqrstuvwxabc123",
@@ -54,17 +56,7 @@ class MyToolWindowFactory : ToolWindowFactory {
             mockedCommitHashes.forEach { commitHash ->
                 add(JBLabel(commitHash))
             }
-//            val label = JBLabel(MyBundle.message("randomLabel", "?"))
-//
-//            add(label)
-            add(JButton(MyBundle.message("shuffle")).apply {
-                val gitBlameAction = GitBlameAction();
-//                val hashes = gitBlameAction.gitBlame(file, 0, 1);
-                addActionListener {
-                    println("toolWindow - gitblameaction: $hashes");
-//                    println("random number retreived from service: " + service.getRandomNumber())
-                }
-            })
+
         }
     }
 }

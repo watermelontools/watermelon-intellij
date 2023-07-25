@@ -13,11 +13,6 @@
         <toolWindow factoryClass="com.github.baristageek.watermelonintellij.toolWindow.MyToolWindowFactory" id="MyToolWindow"/>
     </extensions>
 
-<!--    <extensions defaultExtensionNs="com.intellij.openapi.editor">-->
-<!--        <editorMouseMotionListener implementation="com.github.baristageek.watermelonintellij.InlineGitBlameListener"/>-->
-<!--    </extensions>-->
-
-
     <applicationListeners>
         <listener class="com.github.baristageek.watermelonintellij.listeners.MyApplicationActivationListener" topic="com.intellij.openapi.application.ApplicationActivationListener"/>
     </applicationListeners>

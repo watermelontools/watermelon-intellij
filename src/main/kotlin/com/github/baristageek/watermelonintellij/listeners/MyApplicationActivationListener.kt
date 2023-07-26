@@ -11,6 +11,7 @@ import com.intellij.openapi.editor.event.EditorMouseMotionListener
 import com.intellij.ui.HintHint
 import javax.swing.JLabel
 import com.intellij.ui.awt.RelativePoint
+import com.intellij.openapi.editor.Editor
 
 //internal class MyApplicationActivationListener : ApplicationActivationListener {
 //
@@ -19,26 +20,38 @@ import com.intellij.ui.awt.RelativePoint
 //    }
 //}
 
-class MyApplicationActivationListener : EditorMouseMotionListener {
-
+internal class MyApplicationActivationListener(val editor: Editor) : EditorMouseMotionListener {
+    init {
+        println("init called")
+        editor.addEditorMouseMotionListener(this)
+    }
     override fun mouseMoved(e: EditorMouseEvent) {
-        if(e.area == EditorMouseEventArea.LINE_NUMBERS_AREA) {
-            val line = e.editor.caretModel.logicalPosition.line
-            if(shouldShowTooltip(line)) {
-                val tooltip = createTooltip(line)
-//                HintManager.getInstance().showHint(e.editor, tooltip, HintManager.UNDER, HintManager.HIDE_BY_ANY_KEY, 0, false
-                val tooltipComponent = JLabel("My Tooltip")
-                val point = RelativePoint(e.mouseEvent.locationOnScreen)
+        val line = editor.xyToLogicalPosition(e.mouseEvent.point).line
 
-                HintManager.getInstance().showHint(
-                    tooltipComponent,
-                    point,
-                    HintManager.UNDER as Int,
-                    HintManager.HIDE_BY_ANY_KEY
-                )
+        println("l27 line: $line")
+        println("mouse moved:")
 
-            }
+        if (e.area == EditorMouseEventArea.LINE_MARKERS_AREA) {
+            println("line markers area")
         }
+//        if(e.area == EditorMouseEventArea.LINE_NUMBERS_AREA) {
+//            println("e.area equals")
+//            val line = e.editor.caretModel.logicalPosition.line
+//            if(shouldShowTooltip(line)) {
+//                val tooltip = createTooltip(line)
+////                HintManager.getInstance().showHint(e.editor, tooltip, HintManager.UNDER, HintManager.HIDE_BY_ANY_KEY, 0, false
+//                val tooltipComponent = JLabel("My Tooltip")
+//                val point = RelativePoint(e.mouseEvent.locationOnScreen)
+//
+//                HintManager.getInstance().showHint(
+//                    tooltipComponent,
+//                    point,
+//                    HintManager.UNDER as Int,
+//                    HintManager.HIDE_BY_ANY_KEY
+//                )
+//
+//            }
+//        }
     }
 
     private fun shouldShowTooltip(line: Int): Boolean {

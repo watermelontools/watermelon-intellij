@@ -4,14 +4,22 @@ import com.intellij.openapi.components.Service
 import com.intellij.openapi.diagnostic.thisLogger
 import com.intellij.openapi.project.Project
 import com.github.baristageek.watermelonintellij.MyBundle
-
+import com.github.baristageek.watermelonintellij.listeners.MyApplicationActivationListener
+import com.intellij.openapi.editor.Editor
+import com.intellij.openapi.editor.EditorFactory
+import com.intellij.openapi.fileTypes.PlainTextFileType
+import com.intellij.openapi.vfs.VirtualFile
+import com.intellij.openapi.editor.Document
 @Service(Service.Level.PROJECT)
 class MyProjectService(project: Project) {
 
     init {
-        thisLogger().info(MyBundle.message("projectService", project.name))
-        thisLogger().warn("Don't forget to remove all non-needed sample code files with their corresponding registration entries in `plugin.xml`.")
+        println("project service init")
     }
 
-    fun getRandomNumber() = (1..100).random()
+    private val document: Document = EditorFactory.getInstance().createDocument("")
+
+    private val editor: Editor = EditorFactory.getInstance().createEditor(document)
+    private val activationListener = MyApplicationActivationListener(editor)
+//    fun getRandomNumber() = (1..100).random()
 }

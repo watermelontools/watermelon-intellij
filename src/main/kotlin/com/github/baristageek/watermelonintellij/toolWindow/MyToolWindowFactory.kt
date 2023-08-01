@@ -16,6 +16,8 @@ import com.intellij.ui.JBColor
 import java.awt.Color
 import com.github.baristageek.watermelonintellij.actions.GitBlameAction
 import com.intellij.openapi.vcs.FilePath
+import com.intellij.openapi.actionSystem.AnActionEvent
+import com.intellij.openapi.actionSystem.DataContext
 
 
 class MyToolWindowFactory : ToolWindowFactory {
@@ -36,27 +38,18 @@ class MyToolWindowFactory : ToolWindowFactory {
         private val service = toolWindow.project.service<MyProjectService>()
 
         fun getContent() = JBPanel<JBPanel<*>>().apply {
-            // The scope of the commit hashes must be here
             val commitsLabel = JBLabel(("Commit Hashes"))
             commitsLabel.font = commitsLabel.font.deriveFont(Font.BOLD)
             commitsLabel.foreground = JBColor(Color(0x999999), Color(0x999999))
             add(commitsLabel);
 
-            // TODO: Run val gitBlameAction = GitBlameAction(); here
-            val mockedCommitHashes = arrayOf(
-                "abc123def456789ghijklmn0pqrstuvwx",
-                "def456789ghijklmn0pqrstuvwxabc123",
-                "789ghijklmn0pqrstuvwxabc123def456",
-                "ijklmn0pqrstuvwxabc123def456789g",
-                "mn0pqrstuvwxabc123def456789ghijk",
-                "rstuvwxabc123def456789ghijklmn0p",
-                "vwxabc123def456789ghijklmn0pqrstu"
-            )
+            println("toolwindow factory - service.getGitBlame() : " + service.getGitBlame());
 
-            mockedCommitHashes.forEach { commitHash ->
+            val commitHashes = service.getGitBlame();
+
+            commitHashes.forEach { commitHash ->
                 add(JBLabel(commitHash))
             }
-
         }
     }
 }

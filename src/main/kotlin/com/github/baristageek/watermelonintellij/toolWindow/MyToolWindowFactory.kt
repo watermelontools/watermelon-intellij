@@ -38,12 +38,10 @@ class MyToolWindowFactory : ToolWindowFactory {
         private val service = toolWindow.project.service<MyProjectService>()
 
         fun getContent() = JBPanel<JBPanel<*>>().apply {
-            val commitsLabel = JBLabel(("Commit Hashes"))
+            val commitsLabel = JBLabel(("Git"))
             commitsLabel.font = commitsLabel.font.deriveFont(Font.BOLD)
             commitsLabel.foreground = JBColor(Color(0x999999), Color(0x999999))
             add(commitsLabel);
-
-            println("toolwindow factory - service.getGitBlame() : " + service.getGitBlame());
 
             val commitHashes = service.getGitBlame();
 

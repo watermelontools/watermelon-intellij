@@ -23,17 +23,14 @@ class MyProjectService(project: Project) {
         thisLogger().warn("Don't forget to remove all non-needed sample code files with their corresponding registration entries in `plugin.xml`.")
     }
 
-    fun getRandomNumber() = (1..100).random()
     fun getGitBlame() : ArrayList<String> {
-        // Get virtual file
-//        val editor: Editor = PlatformDataKeys.EDITOR
+        // Get file
         val editor: Editor = EditorFactory.getInstance().allEditors[0]
         val document = editor?.document
         val file = FileDocumentManager.getInstance().getFile(document!!)
 
         // Get file path
         val filePath = VcsUtil.getFilePath(file!!);
-
 
         // Get selection line numbers
         val selectionModel = editor.selectionModel
@@ -45,21 +42,19 @@ class MyProjectService(project: Project) {
 
         val blameResult = history.collectHistory(project, filePath)
         val commitHashes = ArrayList<String>()
+        val commitMessages = ArrayList<String>()
         blameResult.forEach {
+            val commitMessageWithAuthor = "${it.author}: ${it.commitMessage}"
             val stringElement = it.toString().split(":")[1]
             commitHashes.add(stringElement)
-            println("stringElement: $stringElement")
+            commitMessages.add(commitMessageWithAuthor)
         }
 
         // TODO: Run a blame range correctly
         // val rangeBlame = blameResult.slice(start..end);
-//        println("rangeblame: $rangeBlame");
+        // println("rangeblame: $rangeBlame");
 
-        // open tool window programmatically
-        val toolWindowManager = ToolWindowManager.getInstance(project)
-        val toolWindow: ToolWindow? = toolWindowManager.getToolWindow("MyToolWindow")
-        toolWindow?.show {}
-        return (commitHashes);
+        return (commitMessages);
     }
 
 }

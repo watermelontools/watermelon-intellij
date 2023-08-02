@@ -24,15 +24,13 @@ class MyProjectService(project: Project) {
     }
 
     fun getGitBlame() : ArrayList<String> {
-        // Get virtual file
-//        val editor: Editor = PlatformDataKeys.EDITOR
+        // Get file
         val editor: Editor = EditorFactory.getInstance().allEditors[0]
         val document = editor?.document
         val file = FileDocumentManager.getInstance().getFile(document!!)
 
         // Get file path
         val filePath = VcsUtil.getFilePath(file!!);
-
 
         // Get selection line numbers
         val selectionModel = editor.selectionModel
@@ -46,22 +44,16 @@ class MyProjectService(project: Project) {
         val commitHashes = ArrayList<String>()
         val commitMessages = ArrayList<String>()
         blameResult.forEach {
-            println("mesage: ${it.commitMessage} author: ${it.author}")
             val commitMessageWithAuthor = "${it.author}: ${it.commitMessage}"
             val stringElement = it.toString().split(":")[1]
             commitHashes.add(stringElement)
             commitMessages.add(commitMessageWithAuthor)
-            println("stringElement: $stringElement")
         }
 
         // TODO: Run a blame range correctly
         // val rangeBlame = blameResult.slice(start..end);
         // println("rangeblame: $rangeBlame");
 
-        // open tool window programmatically
-        val toolWindowManager = ToolWindowManager.getInstance(project)
-        val toolWindow: ToolWindow? = toolWindowManager.getToolWindow("MyToolWindow")
-        toolWindow?.show {}
         return (commitMessages);
     }
 

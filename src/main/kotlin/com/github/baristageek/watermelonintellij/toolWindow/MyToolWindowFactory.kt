@@ -43,8 +43,6 @@ class MyToolWindowFactory : ToolWindowFactory {
             commitsLabel.foreground = JBColor(Color(0x999999), Color(0x999999))
             add(commitsLabel);
 
-            println("toolwindow factory - service.getGitBlame() : " + service.getGitBlame());
-
             val commitHashes = service.getGitBlame();
 
             commitHashes.forEach { commitHash ->

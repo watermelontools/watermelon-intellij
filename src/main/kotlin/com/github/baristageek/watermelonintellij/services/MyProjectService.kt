@@ -23,7 +23,6 @@ class MyProjectService(project: Project) {
         thisLogger().warn("Don't forget to remove all non-needed sample code files with their corresponding registration entries in `plugin.xml`.")
     }
 
-    fun getRandomNumber() = (1..100).random()
     fun getGitBlame() : ArrayList<String> {
         // Get virtual file
 //        val editor: Editor = PlatformDataKeys.EDITOR
@@ -57,7 +56,7 @@ class MyProjectService(project: Project) {
 
         // TODO: Run a blame range correctly
         // val rangeBlame = blameResult.slice(start..end);
-//        println("rangeblame: $rangeBlame");
+        // println("rangeblame: $rangeBlame");
 
         // open tool window programmatically
         val toolWindowManager = ToolWindowManager.getInstance(project)

@@ -45,9 +45,13 @@ class MyProjectService(project: Project) {
 
         val blameResult = history.collectHistory(project, filePath)
         val commitHashes = ArrayList<String>()
+        val commitMessages = ArrayList<String>()
         blameResult.forEach {
+            println("mesage: ${it.commitMessage} author: ${it.author}")
+            val commitMessageWithAuthor = "${it.author}: ${it.commitMessage}"
             val stringElement = it.toString().split(":")[1]
             commitHashes.add(stringElement)
+            commitMessages.add(commitMessageWithAuthor)
             println("stringElement: $stringElement")
         }
 
@@ -59,7 +63,7 @@ class MyProjectService(project: Project) {
         val toolWindowManager = ToolWindowManager.getInstance(project)
         val toolWindow: ToolWindow? = toolWindowManager.getToolWindow("MyToolWindow")
         toolWindow?.show {}
-        return (commitHashes);
+        return (commitMessages);
     }
 
 }

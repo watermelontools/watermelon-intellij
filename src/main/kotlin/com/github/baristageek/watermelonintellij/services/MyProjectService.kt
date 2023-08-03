@@ -31,6 +31,7 @@ class MyProjectService(project: Project) {
 
         // Get file path
         val filePath = VcsUtil.getFilePath(file!!);
+        println("getGitBlame() filepath: $filePath")
 
         // Get selection line numbers
         val selectionModel = editor.selectionModel

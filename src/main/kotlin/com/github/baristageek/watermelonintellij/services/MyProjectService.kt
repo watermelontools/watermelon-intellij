@@ -14,6 +14,7 @@ import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.editor.EditorFactory
 import com.intellij.openapi.fileEditor.FileDocumentManager
 import com.intellij.openapi.application.ApplicationManager
+import com.intellij.openapi.fileEditor.FileEditorManager
 
 @Service(Service.Level.PROJECT)
 class MyProjectService(project: Project) {
@@ -25,20 +26,22 @@ class MyProjectService(project: Project) {
 
     fun getGitBlame() : ArrayList<String> {
         // Get file
-        val editor: Editor = EditorFactory.getInstance().allEditors[0]
+        val project = ProjectManager.getInstance().openProjects[0]
+        val editor: Editor = FileEditorManager.getInstance(project).selectedTextEditor!!
+//        val editor: Editor = EditorFactory.getInstance().allEditors[1] // change this
         val document = editor?.document
         val file = FileDocumentManager.getInstance().getFile(document!!)
 
         // Get file path
         val filePath = VcsUtil.getFilePath(file!!);
-        println("getGitBlame() filepath: $filePath")
+        println("getGitBlame() filepath: $filePath") // this gets first open tab
 
         // Get selection line numbers
         val selectionModel = editor.selectionModel
         val startLine = editor.document.getLineNumber(selectionModel.selectionStart)
         val endLine = editor.document.getLineNumber(selectionModel.selectionEnd)
 
-        val project = ProjectManager.getInstance().getOpenProjects()[0]
+//        val project = ProjectManager.getInstance().getOpenProjects()[0]
         val history = git4idea.history.GitFileHistory;
 
         val blameResult = history.collectHistory(project, filePath)

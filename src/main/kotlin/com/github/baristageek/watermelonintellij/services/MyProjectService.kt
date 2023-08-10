@@ -4,16 +4,11 @@ import com.intellij.openapi.components.Service
 import com.intellij.openapi.diagnostic.thisLogger
 import com.intellij.openapi.project.Project
 import com.github.baristageek.watermelonintellij.MyBundle
-import com.intellij.openapi.actionSystem.AnActionEvent
-import com.intellij.openapi.actionSystem.PlatformDataKeys
 import com.intellij.openapi.project.ProjectManager
-import com.intellij.openapi.wm.ToolWindow
-import com.intellij.openapi.wm.ToolWindowManager
 import com.intellij.vcsUtil.VcsUtil
 import com.intellij.openapi.editor.Editor
-import com.intellij.openapi.editor.EditorFactory
 import com.intellij.openapi.fileEditor.FileDocumentManager
-import com.intellij.openapi.application.ApplicationManager
+import com.intellij.openapi.fileEditor.FileEditorManager
 
 @Service(Service.Level.PROJECT)
 class MyProjectService(project: Project) {
@@ -24,8 +19,9 @@ class MyProjectService(project: Project) {
     }
 
     fun getGitBlame() : ArrayList<String> {
-        // Get file
-        val editor: Editor = EditorFactory.getInstance().allEditors[0]
+        // Get the file being currently edited
+        val project = ProjectManager.getInstance().openProjects[0]
+        val editor: Editor = FileEditorManager.getInstance(project).selectedTextEditor!!
         val document = editor?.document
         val file = FileDocumentManager.getInstance().getFile(document!!)
 
@@ -37,7 +33,6 @@ class MyProjectService(project: Project) {
         val startLine = editor.document.getLineNumber(selectionModel.selectionStart)
         val endLine = editor.document.getLineNumber(selectionModel.selectionEnd)
 
-        val project = ProjectManager.getInstance().getOpenProjects()[0]
         val history = git4idea.history.GitFileHistory;
 
         val blameResult = history.collectHistory(project, filePath)

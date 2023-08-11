@@ -10,7 +10,7 @@
     <resource-bundle>messages.MyBundle</resource-bundle>
 
     <extensions defaultExtensionNs="com.intellij">
-        <toolWindow factoryClass="com.github.baristageek.watermelonintellij.toolWindow.MyToolWindowFactory" id="MyToolWindow"/>
+        <toolWindow factoryClass="com.github.baristageek.watermelonintellij.toolWindow.MyToolWindowFactory" id="🍉 Watermelon"/>
     </extensions>
 
 <!--    <extensions defaultExtensionNs="com.intellij.openapi.editor">-->

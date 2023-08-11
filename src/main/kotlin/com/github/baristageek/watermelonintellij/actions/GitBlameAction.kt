@@ -15,7 +15,7 @@ class GitBlameAction : AnAction() {
         // open tool window programmatically
         val project = ProjectManager.getInstance().getOpenProjects()[0]
         val toolWindowManager = ToolWindowManager.getInstance(project)
-        val toolWindow: ToolWindow? = toolWindowManager.getToolWindow("MyToolWindow")
+        val toolWindow: ToolWindow? = toolWindowManager.getToolWindow("🍉 Watermelon")
 
 //         val service = toolWindow.project.service<MyProjectService>()
         val service = toolWindow?.project?.service<MyProjectService>()

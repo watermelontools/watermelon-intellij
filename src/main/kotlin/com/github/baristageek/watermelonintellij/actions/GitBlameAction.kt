@@ -8,21 +8,23 @@ import com.intellij.openapi.wm.ToolWindowManager
 import com.intellij.openapi.wm.ToolWindow
 import com.github.baristageek.watermelonintellij.toolWindow.MyToolWindowFactory
 import com.intellij.openapi.components.service
+import com.intellij.ui.content.ContentFactory
 
 class GitBlameAction : AnAction() {
     override fun actionPerformed(e: AnActionEvent) {
-
         // open tool window programmatically
+        // we removeAllContents() and then createToolWindowContent once again
         val project = ProjectManager.getInstance().getOpenProjects()[0]
         val toolWindowManager = ToolWindowManager.getInstance(project)
         val toolWindow: ToolWindow? = toolWindowManager.getToolWindow("🍉 Watermelon")
 
-//         val service = toolWindow.project.service<MyProjectService>()
         val service = toolWindow?.project?.service<MyProjectService>()
+        toolWindow?.contentManager?.removeAllContents(true)
+
         service?.getGitBlame();
 
-//        val toolWindowFactory = MyToolWindowFactory()
-//        toolWindowFactory.createToolWindowContent(project, toolWindow!!)
+        val toolWindowFactory = MyToolWindowFactory()
+        toolWindowFactory.createToolWindowContent(project, toolWindow!!)
 
         toolWindow?.show {}
     }

@@ -19,7 +19,6 @@ class MyProjectService(project: Project) {
     }
 
     fun getGitBlame() : ArrayList<String> {
-        println("service getGitBlame")
         // Get the file being currently edited
         val project = ProjectManager.getInstance().openProjects[0]
         val editor: Editor = FileEditorManager.getInstance(project).selectedTextEditor!!

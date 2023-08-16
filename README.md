@@ -35,6 +35,12 @@ Watermelon's IntelliJ plugin allows you to obtain business context for a file or
 
 [//]: # (TODO: Product screenshot here)
 
+## Running the plugin
+- You must have Gradle installed
+- For best results, use Java 17
+- The Gradle JDK we use is Corretto 19
+- To publish the plugin to the JetBrains marketplace: Run the Gradle build task that generates a .zip of the build, then go to https://plugins.jetbrains.com/plugin/add#intellij and upload
+
 ## Requirements
 - You must have Git locally installed (try `git --version` or [install it now](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git))
 

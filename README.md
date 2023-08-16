@@ -5,6 +5,7 @@
 ![GitHub commit activity (branch)](https://img.shields.io/github/commit-activity/m/watermelontools/watermelon-intellij?style=flat-square)
 [![GitHub Repo stars](https://img.shields.io/github/stars/watermelontools/watermelon-intellij?style=flat-square)](https://github.com/watermelontools/watermelon-intellij/stargazers)
 [![Contributors](https://img.shields.io/github/contributors/watermelontools/watermelon-intellij?style=flat-square)](https://github.com/watermelontools/watermelon-intellij/graphs/contributors)
+![JetBrains plugins](https://img.shields.io/jetbrains/plugin/d/22251-watermelon-intellij-template?style=flat-square)
 [![OpenSSF Scorecard](https://api.securityscorecards.dev/projects/github.com/watermelontools/watermelon-intellij/badge)](https://securityscorecards.dev/viewer/?uri=github.com/watermelontools/watermelon-intellij)
 [![Twitter Follow](https://img.shields.io/twitter/follow/WatermelonTools?style=flat-square)](https://twitter.com/intent/follow?screen_name=WatermelonTools)
 [![Discord](https://img.shields.io/discord/933846506438541492?style=flat-square)](https://discord.com/invite/H4AE6b9442)

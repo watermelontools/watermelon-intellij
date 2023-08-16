@@ -1,52 +1,74 @@
-# watermelon-intellij
+# Watermelon for IntelliJ
 
-![Build](https://github.com/watermelontools/watermelon-intellij/workflows/Build/badge.svg)
-[![Version](https://img.shields.io/jetbrains/plugin/v/PLUGIN_ID.svg)](https://plugins.jetbrains.com/plugin/com.github.baristageek.watermelonintellij)
-[![Downloads](https://img.shields.io/jetbrains/plugin/d/PLUGIN_ID.svg)](https://plugins.jetbrains.com/plugin/com.github.baristageek.watermelonintellij)
+[![Report an issue](https://img.shields.io/badge/-Report%20an%20issue-critical)](https://github.com/watermelontools/watermelon-intellij/issues)
 
-## Template ToDo list
-- [x] Create a new [IntelliJ Platform Plugin Template][template] project.
-- [x] Get familiar with the [template documentation][template].
-- [x] Adjust the [pluginGroup](./gradle.properties), [plugin ID](./src/main/resources/META-INF/plugin.xml) and [sources package](./src/main/kotlin).
-- [x] Adjust the plugin description in `README` (see [Tips][docs:plugin-description])
-- [x] Review the [Legal Agreements](https://plugins.jetbrains.com/docs/marketplace/legal-agreements.html?from=IJPluginTemplate).
-- [x] [Publish a plugin manually](https://plugins.jetbrains.com/docs/intellij/publishing-plugin.html?from=IJPluginTemplate) for the first time.
-- [x] Set the `PLUGIN_ID` in the above README badges.
-- [x] Set the [Plugin Signing](https://plugins.jetbrains.com/docs/intellij/plugin-signing.html?from=IJPluginTemplate) related [secrets](https://github.com/JetBrains/intellij-platform-plugin-template#environment-variables).
-- [x] Set the [Deployment Token](https://plugins.jetbrains.com/docs/marketplace/plugin-upload.html?from=IJPluginTemplate).
-- [x] Click the <kbd>Watch</kbd> button on the top of the [IntelliJ Platform Plugin Template][template] to be notified about releases containing new features and fixes.
+![GitHub commit activity (branch)](https://img.shields.io/github/commit-activity/m/watermelontools/watermelon-intellij?style=flat-square)
+[![GitHub Repo stars](https://img.shields.io/github/stars/watermelontools/watermelon-intellij?style=flat-square)](https://github.com/watermelontools/watermelon-intellij/stargazers)
+[![Contributors](https://img.shields.io/github/contributors/watermelontools/watermelon-intellij?style=flat-square)](https://github.com/watermelontools/watermelon-intellij/graphs/contributors)
+[![Twitter Follow](https://img.shields.io/twitter/follow/WatermelonTools?style=flat-square)](https://twitter.com/intent/follow?screen_name=WatermelonTools)
+[![Discord](https://img.shields.io/discord/933846506438541492?style=flat-square)](https://discord.com/invite/H4AE6b9442)
 
-<!-- Plugin description -->
-**Watermelon helps your team merge Pull Requests With Business Value.** Our set of plug-ins help you understand business context, improve your coding velocity and merge PRs like a breeze.
+**Watermelon is a Passive Documentation Search Engine** serving both our GitHub app and IDE extensions. Our set of plug-ins help developers understand code context, improve their coding velocity and merge PRs like a breeze.
 
-We've built a search algorithm that indexes the most relevant passive documentation for a given block of code.
+We've built a search algorithm that indexes the most relevant [passive documentation](https://www.watermelontools.com/post/what-is-passive-code-documentation-why-is-it-hard-to-scale-what-to-do-about-it) for a given block of code.
 
 To obtain business context in your IDE, use this extension.
 
-To obtain business context in your CI/CD, take a look at our [GitHub Application](https://github.com/apps/watermelon-context)
+To obtain business context in your CI/CD, take a look at our [GitHub Application](https://github.com/watermelontools/watermelon)
 
-To keep everything working, do not remove `<!-- ... -->` sections. 
-<!-- Plugin description end -->
+
+## Integrations
+
+We currently support the following integrations
+
+| Watermelon Product | Git                                     | Project Management | Messaging | Documentation |
+|:-------------------|:----------------------------------------| :----------------- | :-------- | :-----------  |
+| IntelliJ           | GitHub (Alpha)                          |                |      |               |
+| VS Code            | GitHub, GitLab (Beta), Bitbucket (Beta) | Jira               | Slack     |               |
+| GitHub App         | GitHub.                                 | Jira, Linear               | Slack     | Notion, Confluence        |
+## Features
+
+Watermelon's IntelliJ plugin allows you to obtain business context for a file or block of code via:
+
+- Right click menu button "Run Watermelon"
+- Hover to get context (coming soon)
+
+[//]: # (TODO: Product screenshot here)
+
+## Running the plugin
+- You must have Gradle installed
+- For best results, use Java 17
+- The Gradle JDK we use is Corretto 19
+- To publish the plugin to the JetBrains marketplace: Run the Gradle build task that generates a .zip of the build, then go to https://plugins.jetbrains.com/plugin/add#intellij and upload
+
+## Requirements
+- You must have Git locally installed (try `git --version` or [install it now](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git))
 
 ## Installation
+Download from the [JetBrains Marketplace](https://plugins.jetbrains.com/plugin/22251-watermelon-intellij-template).
 
-**For the Gradle build to be successful make sure you are using Java 17 and Coretto 19 as the Gradle JVM**. 
-Also, make sure that Git4Idea is installed as a Gradle dependency to run on dev mode
+## Contributing
+Check out [Contributing.md](CONTRIBUTING.md) and be aware of the [Code of Conduct](CODE_OF_CONDUCT.md)!
 
-- Using IDE built-in plugin system:
-  
-  <kbd>Settings/Preferences</kbd> > <kbd>Plugins</kbd> > <kbd>Marketplace</kbd> > <kbd>Search for "watermelon-intellij"</kbd> >
-  <kbd>Install Plugin</kbd>
-  
-- Manually:
+We're an early-stage project, therefore we still have the luxury to coordinate via short chats with our contributors. If you're interested in contributing, please join our [Discord](https://discord.com/invite/H4AE6b9442) community.
+Alternatively, comment on our issues if you plan to solve one.
 
-  Download the [latest release](https://github.com/watermelontools/watermelon-intellij/releases/latest) and install it manually using
-  <kbd>Settings/Preferences</kbd> > <kbd>Plugins</kbd> > <kbd>⚙️</kbd> > <kbd>Install plugin from disk...</kbd>
+[![Report an issue](https://img.shields.io/badge/-Report%20an%20issue-critical)](https://github.com/watermelontools/watermelon-intellij/issues)
+## Analytics
+Watermelon [doesn't store your code](https://www.watermelontools.com/post/building-a-code-archeology-toolbox-without-storing-your-code). In our commitment to transparency, we made our API (search engine) source-available. 
 
-To deploy run the "build" Gradle task. This will create a .zip in the /build/distributions/ directory. Upload that .zip to the IntelliJ marketplace to update the plugin. 
+## Supporters
+
+[![Stargazers repo roster for @watermelontools/watermelon-intellij](https://reporoster.com/stars/watermelontools/watermelon-intellij)](https://github.com/watermelontools/watermelon-intellij/stargazers)
+
+[![Forkers repo roster for @watermelontools/watermelon-intellij](https://reporoster.com/forks/watermelontools/watermelon-intellij)](https://github.com/watermelontools/watermelon-intellij/network/members)
 
 ---
-Plugin based on the [IntelliJ Platform Plugin Template][template].
 
-[template]: https://github.com/JetBrains/intellij-platform-plugin-template
-[docs:plugin-description]: https://plugins.jetbrains.com/docs/intellij/plugin-user-experience.html#plugin-description-and-presentation
+#### About Watermelon
+
+Watermelon is built by a globally distributed team of developers devoted to making software development easier. Join our [Discord](https://discord.com/invite/H4AE6b9442) community, follow us on [Twitter](https://twitter.com/WatermelonTools) and go to the [Watermelon blog](https://watermelon.tools/blog) to get the best programming tips.
+
+### License
+
+- [Apache License](LICENSE.md)

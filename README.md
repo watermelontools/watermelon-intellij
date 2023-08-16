@@ -41,6 +41,7 @@ Watermelon's IntelliJ plugin allows you to obtain business context for a file or
 - You must have Gradle installed
 - For best results, use Java 17
 - The Gradle JDK we use is Corretto 19
+- If you build the plugin and it fails, it will be common that running `gradle clean` on your CLI will be the solution
 - To publish the plugin to the JetBrains marketplace: Run the Gradle build task that generates a .zip of the build, then go to https://plugins.jetbrains.com/plugin/add#intellij and upload
 
 ## Requirements
@@ -56,6 +57,7 @@ We're an early-stage project, therefore we still have the luxury to coordinate v
 Alternatively, comment on our issues if you plan to solve one.
 
 [![Report an issue](https://img.shields.io/badge/-Report%20an%20issue-critical)](https://github.com/watermelontools/watermelon-intellij/issues)
+
 ## Analytics
 Watermelon [doesn't store your code](https://www.watermelontools.com/post/building-a-code-archeology-toolbox-without-storing-your-code). In our commitment to transparency, we made our API (search engine) source-available. 
 

@@ -12,6 +12,7 @@ import com.intellij.openapi.fileEditor.FileEditorManager
 import git4idea.commands.GitCommand
 import git4idea.commands.GitLineHandler
 import git4idea.commands.Git;
+import git4idea.repo.GitRepositoryManager
 
 
 @Service(Service.Level.PROJECT)
@@ -40,11 +41,16 @@ class MyProjectService(project: Project) {
         val history = git4idea.history.GitFileHistory;
 
         //     old approach   val blameResult = history.collectHistory(project, filePath)
-        val h = GitLineHandler(project, filePath.virtualFile!!, GitCommand.BLAME)
-        h.setSilent(true)
-        h.addParameters("-L ${startLine},${endLine}")
-        val blameResult = Git.getInstance().runCommand(h).output;
-        println("l53 blameResult: $blameResult")
+        val repository = GitRepositoryManager.getInstance(project).repositories[0]
+        println("repo root: ${repository.root}")
+        val h = GitLineHandler(project, repository.root, GitCommand.BLAME)
+        h.addParameters("-p", "-L", "$startLine,$endLine")
+        h.endOptions()
+        h.addRelativeFiles(listOf(filePath.virtualFile))
+
+        val result = Git.getInstance().runCommand(h)
+        val output = result.getOutputOrThrow()
+        println(output)
         // fix blame range above
 
 

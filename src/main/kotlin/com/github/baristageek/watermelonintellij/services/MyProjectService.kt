@@ -39,22 +39,52 @@ class MyProjectService(project: Project) {
         val endLine = editor.document.getLineNumber(selectionModel.selectionEnd)
 
         val history = git4idea.history.GitFileHistory;
+        val commitHashes = ArrayList<String>()
 
         //     old approach   val blameResult = history.collectHistory(project, filePath)
         val repository = GitRepositoryManager.getInstance(project).repositories[0]
         println("repo root: ${repository.root}")
         val h = GitLineHandler(project, repository.root, GitCommand.BLAME)
-        h.addParameters("-p", "-L", "$startLine,$endLine")
+        h.addParameters( "-L", "$startLine,$endLine")
         h.endOptions()
         h.addRelativeFiles(listOf(filePath.virtualFile))
 
         val result = Git.getInstance().runCommand(h)
         val output = result.getOutputOrThrow()
-        println(output)
+//        println(output)
         // fix blame range above
 
+        output.split("\n").forEach { line ->
+            val parts = line.split(" ")
+            if (parts.size > 0) {
+                commitHashes.add(parts[0])
+            }
+        }
 
-        val commitHashes = ArrayList<String>()
+        println(commitHashes)
+
+        val commitDetails = ArrayList<String>()
+
+        for (hash in commitHashes) {
+
+            // Call git log for each hash
+            val log = GitLineHandler(project, repository.root, GitCommand.LOG)
+            log.addParameters(hash)
+            val logResult = Git.getInstance().runCommand(log)
+
+            // Extract author and commit message
+            val logOutput = logResult.output.toString()
+//            val author = logOutput.split("\n")[0].split(" ")[1]
+//            val message = logOutput.split("\n")[4]
+
+            println("logoutput $logOutput")
+            // Add to array
+//            commitDetails.add("$author: $message")
+        }
+
+        println("commitDetails: $commitDetails")
+
+
 //        val commitMessages = ArrayList<String>()
         val commitMessages = arrayListOf("jskfljsf")
 

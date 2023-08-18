@@ -38,12 +38,10 @@ class MyProjectService(project: Project) {
         val startLine = editor.document.getLineNumber(selectionModel.selectionStart)
         val endLine = editor.document.getLineNumber(selectionModel.selectionEnd)
 
-        val history = git4idea.history.GitFileHistory;
         val commitHashes = ArrayList<String>()
-
+//        val history = git4idea.history.GitFileHistory;
         //     old approach   val blameResult = history.collectHistory(project, filePath)
         val repository = GitRepositoryManager.getInstance(project).repositories[0]
-        println("repo root: ${repository.root}")
         val h = GitLineHandler(project, repository.root, GitCommand.BLAME)
         h.addParameters( "-L", "$startLine,$endLine")
         h.endOptions()
@@ -51,8 +49,6 @@ class MyProjectService(project: Project) {
 
         val result = Git.getInstance().runCommand(h)
         val output = result.getOutputOrThrow()
-//        println(output)
-        // fix blame range above
 
         output.split("\n").forEach { line ->
             val parts = line.split(" ")
@@ -60,8 +56,6 @@ class MyProjectService(project: Project) {
                 commitHashes.add(parts[0])
             }
         }
-
-        println(commitHashes)
 
         val commitDetails = ArrayList<String>()
 
@@ -74,28 +68,13 @@ class MyProjectService(project: Project) {
 
             // Extract author and commit message
             val logOutput = logResult.output.toString()
-//            val author = logOutput.split("\n")[0].split(" ")[1]
-//            val message = logOutput.split("\n")[4]
+            val author = logOutput.split("\n")[0].split(",")[1]
+            val message = logOutput.split("\n")[4]
 
-            println("logoutput $logOutput")
-            // Add to array
-//            commitDetails.add("$author: $message")
+            commitDetails.add("$author: $message")
         }
 
-        println("commitDetails: $commitDetails")
-
-
-//        val commitMessages = ArrayList<String>()
-        val commitMessages = arrayListOf("jskfljsf")
-
-//        blameResult.forEach {
-//            val commitMessageWithAuthor = "${it.author}: ${it.commitMessage}"
-//            val stringElement = it.toString().split(":")[1]
-//            commitHashes.add(stringElement)
-//            commitMessages.add(commitMessageWithAuthor)
-//        }
-
-        return (commitMessages);
+        return (commitDetails);
     }
 
 }

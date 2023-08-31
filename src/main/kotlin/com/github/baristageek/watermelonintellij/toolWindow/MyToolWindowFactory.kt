@@ -1,4 +1,4 @@
-package com.github.baristageek.watermelonintellij.toolWindow
+package com.watermelon.context.toolWindow
 
 import com.intellij.openapi.components.service
 import com.intellij.openapi.diagnostic.thisLogger
@@ -8,7 +8,7 @@ import com.intellij.openapi.wm.ToolWindowFactory
 import com.intellij.ui.components.JBLabel
 import com.intellij.ui.components.JBPanel
 import com.intellij.ui.content.ContentFactory
-import com.github.baristageek.watermelonintellij.services.MyProjectService
+import com.watermelon.context.services.MyProjectService
 import java.awt.Font
 import javax.swing.BoxLayout
 import javax.swing.BorderFactory
@@ -40,7 +40,7 @@ class MyToolWindowFactory : ToolWindowFactory {
 
             border = BorderFactory.createEmptyBorder(10, 10, 10, 10)
 
-            val titleLabel = JBLabel("Commit History").apply {
+            val titleLabel = JBLabel("Commit history").apply {
                 font = font.deriveFont(Font.BOLD, 16f)
             }
             add(titleLabel)

@@ -1,4 +1,4 @@
-package com.github.baristageek.watermelonintellij.listeners
+package com.watermelon.context.listeners
 
 import com.intellij.openapi.application.ApplicationActivationListener
 import com.intellij.openapi.diagnostic.thisLogger

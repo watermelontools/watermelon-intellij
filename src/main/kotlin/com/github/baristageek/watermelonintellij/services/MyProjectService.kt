@@ -1,9 +1,9 @@
-package com.github.baristageek.watermelonintellij.services
+package com.watermelon.context.services
 
 import com.intellij.openapi.components.Service
 import com.intellij.openapi.diagnostic.thisLogger
 import com.intellij.openapi.project.Project
-import com.github.baristageek.watermelonintellij.MyBundle
+import com.watermelon.context.MyBundle
 import com.intellij.openapi.project.ProjectManager
 import com.intellij.vcsUtil.VcsUtil
 import com.intellij.openapi.editor.Editor
@@ -18,11 +18,11 @@ class MyProjectService(project: Project) {
         thisLogger().warn("Don't forget to remove all non-needed sample code files with their corresponding registration entries in `plugin.xml`.")
     }
 
-    fun getGitBlame() : ArrayList<String> {
+    fun getGitBlame(): ArrayList<String> {
         // Get the file being currently edited
         val project = ProjectManager.getInstance().openProjects[0]
         val editor: Editor = FileEditorManager.getInstance(project).selectedTextEditor!!
-        val document = editor?.document
+        val document = editor.document
         val file = FileDocumentManager.getInstance().getFile(document!!)
 
         // Get file path
@@ -32,7 +32,8 @@ class MyProjectService(project: Project) {
         val selectionModel = editor.selectionModel
         val startLine = editor.document.getLineNumber(selectionModel.selectionStart)
         val endLine = editor.document.getLineNumber(selectionModel.selectionEnd)
-
+        println(startLine)
+        println(endLine)
         val history = git4idea.history.GitFileHistory;
 
         val blameResult = history.collectHistory(project, filePath)

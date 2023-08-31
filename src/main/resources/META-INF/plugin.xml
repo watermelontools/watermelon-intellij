@@ -1,8 +1,8 @@
 <!-- Plugin Configuration File. Read more: https://plugins.jetbrains.com/docs/intellij/plugin-configuration-file.html -->
 <idea-plugin>
-    <id>com.github.baristageek.watermelonintellij</id>
-    <name>watermelon-intellij Template</name>
-    <vendor>baristageek</vendor>
+    <id>com.watermelon.context</id>
+    <name>Watermelon Context</name>
+    <vendor>Watermelon</vendor>
 
     <depends>com.intellij.modules.platform</depends>
     <depends>Git4Idea</depends>
@@ -10,22 +10,18 @@
     <resource-bundle>messages.MyBundle</resource-bundle>
 
     <extensions defaultExtensionNs="com.intellij">
-        <toolWindow factoryClass="com.github.baristageek.watermelonintellij.toolWindow.MyToolWindowFactory" id="🍉 Watermelon"/>
+        <toolWindow factoryClass="com.watermelon.context.toolWindow.MyToolWindowFactory" id="🍉 Watermelon"/>
     </extensions>
 
-<!--    <extensions defaultExtensionNs="com.intellij.openapi.editor">-->
-<!--        <editorMouseMotionListener implementation="com.github.baristageek.watermelonintellij.InlineGitBlameListener"/>-->
-<!--    </extensions>-->
-
-
     <applicationListeners>
-        <listener class="com.github.baristageek.watermelonintellij.listeners.MyApplicationActivationListener" topic="com.intellij.openapi.application.ApplicationActivationListener"/>
+        <listener class="com.watermelon.context.listeners.MyApplicationActivationListener"
+                  topic="com.intellij.openapi.application.ApplicationActivationListener"/>
     </applicationListeners>
 
     <actions>
         <action
                 id="EditorBasics.EditorIllustrationAction"
-                class="com.github.baristageek.watermelonintellij.actions.GitBlameAction"
+                class="com.watermelon.context.actions.GitBlameAction"
                 text="Run Watermelon"
                 description="Contextualizes code with context from git, messaging, project management, and documentation systems."
         >

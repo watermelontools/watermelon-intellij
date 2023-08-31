@@ -14,7 +14,7 @@ class GitBlameAction : AnAction() {
     override fun actionPerformed(e: AnActionEvent) {
         // open tool window programmatically
         // we removeAllContents() and then createToolWindowContent once again
-        val project = ProjectManager.getInstance().getOpenProjects()[0]
+        val project = ProjectManager.getInstance().openProjects[0]
         val toolWindowManager = ToolWindowManager.getInstance(project)
         val toolWindow: ToolWindow? = toolWindowManager.getToolWindow("🍉 Watermelon")
 

@@ -45,11 +45,17 @@ class MyToolWindowFactory : ToolWindowFactory {
         private val service = toolWindow.project.service<MyProjectService>()
 
         fun getContent(startLine: Int = 0, endLine: Int = 0) = JBPanel<JBPanel<*>>().apply {
-            
+
+            layout = BoxLayout(this, BoxLayout.Y_AXIS)
+
+            border = BorderFactory.createEmptyBorder(10, 10, 10, 10)
+
             val titleLabel = JBLabel("Commit history").apply {
                 font = font.deriveFont(Font.BOLD, 16f)
             }
             add(titleLabel)
+
+            add(Box.createRigidArea(Dimension(0, 10)))
 
             val commitHashes = if (startLine == 0 && endLine == 0) {
                 service.getGitBlame()
@@ -60,6 +66,7 @@ class MyToolWindowFactory : ToolWindowFactory {
                 val commitLabel = JBLabel(commitHash).apply {
                     font = font.deriveFont(Font.PLAIN, 14f)
                 }
+                println("commitHash: $commitHash")
                 add(commitLabel)
 
                 // Add a panel with vertical flow layout

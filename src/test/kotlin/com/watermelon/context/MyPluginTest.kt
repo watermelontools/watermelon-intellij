@@ -20,7 +20,7 @@ class MyPluginTest : BasePlatformTestCase() {
         assertNotNull(xmlFile.rootTag)
 
         xmlFile.rootTag?.let {
-            assertEquals("foo", it.name)
+            assertEquals("Watermelon Context", it.name)
             assertEquals("bar", it.value.text)
         }
     }

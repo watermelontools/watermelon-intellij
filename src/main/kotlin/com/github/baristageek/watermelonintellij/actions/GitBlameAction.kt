@@ -26,7 +26,7 @@ class GitBlameAction : AnAction() {
         val toolWindowFactory = MyToolWindowFactory()
         toolWindowFactory.createToolWindowContent(project, toolWindow!!)
 
-        toolWindow?.show {}
+        toolWindow.show {}
     }
 
 }

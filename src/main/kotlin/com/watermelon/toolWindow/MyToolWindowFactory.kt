@@ -19,10 +19,22 @@ class MyToolWindowFactory : ToolWindowFactory {
     init {
     }
 
-    override fun createToolWindowContent(project: Project, toolWindow: ToolWindow) {
+    fun createToolWindowContent(project: Project, toolWindow: ToolWindow, startLine: Int, endLine: Int) {
         // this only runs once
         val myToolWindow = MyToolWindow(toolWindow)
-        val content = ContentFactory.getInstance().createContent(myToolWindow.getContent(), null, false)
+        val content =
+            ContentFactory.getInstance().createContent(myToolWindow.getContent(startLine, endLine), null, false)
+        toolWindow.contentManager.removeAllContents(true)
+        toolWindow.contentManager.addContent(content)
+    }
+
+    override fun createToolWindowContent(project: Project, toolWindow: ToolWindow) {
+
+        // this only runs once
+        val myToolWindow = MyToolWindow(toolWindow)
+        val content =
+            ContentFactory.getInstance().createContent(myToolWindow.getContent(), null, false)
+        toolWindow.contentManager.removeAllContents(true)
         toolWindow.contentManager.addContent(content)
     }
 
@@ -32,21 +44,18 @@ class MyToolWindowFactory : ToolWindowFactory {
 
         private val service = toolWindow.project.service<MyProjectService>()
 
-        fun getContent() = JBPanel<JBPanel<*>>().apply {
-
-            layout = BoxLayout(this, BoxLayout.Y_AXIS)
-
-            border = BorderFactory.createEmptyBorder(10, 10, 10, 10)
-
+        fun getContent(startLine: Int = 0, endLine: Int = 0) = JBPanel<JBPanel<*>>().apply {
+            
             val titleLabel = JBLabel("Commit history").apply {
                 font = font.deriveFont(Font.BOLD, 16f)
             }
             add(titleLabel)
 
-            add(Box.createRigidArea(Dimension(0, 10)))
-
-            val commitHashes = service.getGitBlame();
-
+            val commitHashes = if (startLine == 0 && endLine == 0) {
+                service.getGitBlame()
+            } else {
+                service.getPartialGitBlame(startLine, endLine)
+            }
             commitHashes.forEach { commitHash ->
                 val commitLabel = JBLabel(commitHash).apply {
                     font = font.deriveFont(Font.PLAIN, 14f)

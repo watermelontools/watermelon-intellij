@@ -1,9 +1,7 @@
 package com.watermelon.context.services
 
 import com.intellij.openapi.components.Service
-import com.intellij.openapi.diagnostic.thisLogger
 import com.intellij.openapi.project.Project
-import com.watermelon.context.MyBundle
 import com.intellij.openapi.project.ProjectManager
 import com.intellij.vcsUtil.VcsUtil
 import com.intellij.openapi.editor.Editor
@@ -12,11 +10,6 @@ import com.intellij.openapi.fileEditor.FileEditorManager
 
 @Service(Service.Level.PROJECT)
 class MyProjectService(project: Project) {
-
-    init {
-        thisLogger().info(MyBundle.message("projectService", project.name))
-        thisLogger().warn("Don't forget to remove all non-needed sample code files with their corresponding registration entries in `plugin.xml`.")
-    }
 
     fun getGitBlame(): ArrayList<String> {
         // Get the file being currently edited
@@ -32,8 +25,8 @@ class MyProjectService(project: Project) {
         val selectionModel = editor.selectionModel
         val startLine = editor.document.getLineNumber(selectionModel.selectionStart)
         val endLine = editor.document.getLineNumber(selectionModel.selectionEnd)
-        println(startLine)
-        println(endLine)
+        println("startLine $startLine")
+        println("endLine $endLine")
         val history = git4idea.history.GitFileHistory;
 
         val blameResult = history.collectHistory(project, filePath)

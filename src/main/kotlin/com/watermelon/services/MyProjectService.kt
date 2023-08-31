@@ -22,8 +22,7 @@ class MyProjectService(project: Project) {
     private val directory = file?.parent
     private val filePath = VcsUtil.getFilePath(file!!);
     fun getGitBlame(): ArrayList<String> {
-        val commitMessages = ArrayList<String>()
-        // print changes for current revision
+        // get changes for current revision
         val blameRun = directory?.let {
             git4idea.commands.GitLineHandler(
                 project, it, GitCommand.BLAME,
@@ -37,16 +36,11 @@ class MyProjectService(project: Project) {
         }
 
         val blameCommandResponse = blameRun?.let { runCommand(it) }
-        println("blameCommandResponse: $blameCommandResponse");
-
-        return (commitMessages);
+        return blameCommandResponse?.output?.toList() as ArrayList<String>;
     }
 
     fun getPartialGitBlame(startLine: Int, endLine: Int): ArrayList<String> {
-        // Get the file being currently edited
-
-        val commitMessages = ArrayList<String>()
-        // print changes for current revision
+        // get changes for current revision
         val blameRun = directory?.let {
             git4idea.commands.GitLineHandler(
                 project, it, GitCommand.BLAME,
@@ -61,8 +55,10 @@ class MyProjectService(project: Project) {
         }
 
         val blameCommandResponse = blameRun?.let { runCommand(it) }
-        println("blameCommandResponse: $blameCommandResponse");
+        val output = blameCommandResponse?.output
+        println("outputLength: ${output?.size}");
 
-        return (commitMessages);
+
+        return (blameCommandResponse?.output?.toList() as ArrayList<String>);
     }
 }

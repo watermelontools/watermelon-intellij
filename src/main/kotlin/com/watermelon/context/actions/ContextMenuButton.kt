@@ -1,4 +1,4 @@
-package com.watermelon.actions
+package com.watermelon.context.actions
 
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent

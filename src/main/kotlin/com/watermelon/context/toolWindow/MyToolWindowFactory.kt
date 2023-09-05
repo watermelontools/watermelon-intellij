@@ -1,5 +1,6 @@
 package com.watermelon.context.toolWindow
 
+import MyProjectService
 import com.intellij.openapi.components.service
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.wm.ToolWindow
@@ -7,7 +8,6 @@ import com.intellij.openapi.wm.ToolWindowFactory
 import com.intellij.ui.components.JBLabel
 import com.intellij.ui.components.JBPanel
 import com.intellij.ui.content.ContentFactory
-import com.watermelon.context.services.MyProjectService
 import java.awt.Font
 import javax.swing.BoxLayout
 import javax.swing.BorderFactory
@@ -16,8 +16,6 @@ import javax.swing.Box
 import javax.swing.JPanel
 
 class MyToolWindowFactory : ToolWindowFactory {
-    init {
-    }
 
     fun createToolWindowContent(project: Project, toolWindow: ToolWindow, startLine: Int, endLine: Int) {
         // this only runs once
@@ -62,13 +60,13 @@ class MyToolWindowFactory : ToolWindowFactory {
             } else {
                 service.getPartialGitBlame(startLine, endLine)
             }
-            commitHashes.forEach { commitHash ->
-                val commitLabel = JBLabel(commitHash).apply {
+            commitHashes?.forEach { commitHash ->
+
+                val (hash, author, dateTime, lineNumber, message) = commitHash
+                val commitLabel = JBLabel("$hash: $message").apply {
                     font = font.deriveFont(Font.PLAIN, 14f)
                 }
-                println("commitHash: $commitHash")
                 add(commitLabel)
-
                 // Add a panel with vertical flow layout
                 // This will force each label onto a new line
                 val panel = JPanel().apply {

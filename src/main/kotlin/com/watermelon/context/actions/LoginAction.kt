@@ -41,20 +41,20 @@ class LoginAction : AnAction() {
 
     override fun actionPerformed(e: AnActionEvent) {
         // Open webpage
-        BrowserUtil.browse("https://app.watermelontools.com/intellij")
+        // BrowserUtil.browse("https://app.watermelontools.com/intellij")
 
         // Open a dialog for user input
         val userToken = Messages.showPasswordDialog(
             e.project,
             "Please enter your token:",
-            "Token Input",
+            "Email Input",
             null
         )
 
         if (userToken.isNullOrEmpty()) {
             Messages.showMessageDialog(
                 e.project,
-                "Token should not be empty.",
+                "Email should not be empty.",
                 "Input Error",
                 Messages.getErrorIcon()
             )

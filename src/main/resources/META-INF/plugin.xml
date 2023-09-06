@@ -26,6 +26,13 @@
         >
             <add-to-group group-id="EditorPopupMenu" anchor="first"/>
         </action>
+        <group id="WatermelonContextGroup" popup="true" text="Watermelon Context">
+            <add-to-group group-id="EditorPopupMenu" anchor="last"/>
+            <action id="myPlugin.MyAction" class="com.watermelon.context.actions.LoginAction"
+                    text="Login to Watermelon"
+                    description="View context from your connected services and get an AI summary"/>
+        </group>
+
     </actions>
 
 </idea-plugin>

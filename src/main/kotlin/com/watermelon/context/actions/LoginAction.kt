@@ -3,13 +3,44 @@ package com.watermelon.context.actions
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.ui.Messages
-import com.intellij.util.ui.UIUtil
 import com.intellij.ide.BrowserUtil
+import java.net.HttpURLConnection
+import java.net.URL
 
 class LoginAction : AnAction() {
+    private fun sendTokenToAPI(token: String): String {
+        val apiUrl = "http://localhost:3000/api/extension/intellijLogin"
+        val url = URL(apiUrl)
+        val connection = url.openConnection() as HttpURLConnection
+
+        try {
+            connection.requestMethod = "POST"
+            connection.doOutput = true
+            connection.setRequestProperty("Content-Type", "application/json")
+            connection.setRequestProperty("Charset", "UTF-8")
+
+            val payload = """
+            {
+                "token": "$token"
+            }
+        """.trimIndent()
+
+            connection.outputStream.write(payload.toByteArray())
+
+            val responseCode = connection.responseCode
+            if (responseCode == HttpURLConnection.HTTP_OK) {
+                return connection.inputStream.reader().readText()
+            } else {
+                // Handle non-200 HTTP responses
+                return "Error: $responseCode"
+            }
+        } finally {
+            connection.disconnect()
+        }
+    }
 
     override fun actionPerformed(e: AnActionEvent) {
-        // Open mycompany.com/intellij webpage
+        // Open webpage
         BrowserUtil.browse("https://app.watermelontools.com/intellij")
 
         // Open a dialog for user input
@@ -28,12 +59,11 @@ class LoginAction : AnAction() {
                 Messages.getErrorIcon()
             )
         } else {
-            // Use the userToken for whatever purpose you need
-            // For now, we just show it in a message box (not recommended for real tokens!)
+            val response = sendTokenToAPI(userToken)
             Messages.showMessageDialog(
                 e.project,
-                "You entered: $userToken",
-                "Your Token",
+                "Server Response: $response",
+                "API Response",
                 Messages.getInformationIcon()
             )
         }

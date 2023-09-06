@@ -1,15 +1,22 @@
 package com.watermelon.context.actions
 
-import com.intellij.openapi.actionSystem.AnAction;
-import com.intellij.openapi.actionSystem.AnActionEvent;
-import com.intellij.openapi.ui.Messages
+import com.intellij.credentialStore.CredentialAttributes
 import com.intellij.ide.BrowserUtil
+import com.intellij.ide.passwordSafe.PasswordSafe
+import com.intellij.ide.passwordSafe.PasswordSafe.*
+import com.intellij.openapi.actionSystem.AnAction
+import com.intellij.openapi.actionSystem.AnActionEvent
+import com.intellij.openapi.ui.Messages
+import com.intellij.remoteServer.util.CloudConfigurationUtil.createCredentialAttributes
+import kotlinx.serialization.json.*
+import org.bouncycastle.cms.RecipientId.password
 import java.net.HttpURLConnection
 import java.net.URL
 
+
 class LoginAction : AnAction() {
     private fun sendTokenToAPI(token: String): String {
-        val apiUrl = "http://localhost:3000/api/extension/intellijLogin"
+        val apiUrl = "https://app.watermelontools.com/api/extension/intellijLogin"
         val url = URL(apiUrl)
         val connection = url.openConnection() as HttpURLConnection
 
@@ -29,6 +36,14 @@ class LoginAction : AnAction() {
 
             val responseCode = connection.responseCode
             if (responseCode == HttpURLConnection.HTTP_OK) {
+                val jsonResponse = Json.parseToJsonElement(connection.inputStream.reader().readText()).jsonObject
+                val data = jsonResponse["data"]?.jsonObject
+                val id = data?.get("id")?.toString()
+                val email = data?.get("email")?.toString()
+                // Store the tokens
+                val passwordSafe = PasswordSafe.instance
+                passwordSafe.setPassword(CredentialAttributes("WatermelonContext.id"), id)
+                passwordSafe.setPassword(CredentialAttributes("WatermelonContext.email"), email)
                 return connection.inputStream.reader().readText()
             } else {
                 // Handle non-200 HTTP responses
@@ -41,17 +56,17 @@ class LoginAction : AnAction() {
 
     override fun actionPerformed(e: AnActionEvent) {
         // Open webpage
-        // BrowserUtil.browse("https://app.watermelontools.com/intellij")
+        BrowserUtil.browse("https://app.watermelontools.com/intellij")
 
         // Open a dialog for user input
-        val userToken = Messages.showPasswordDialog(
+        val email = Messages.showPasswordDialog(
             e.project,
-            "Please enter your token:",
+            "Please enter your email:",
             "Email Input",
             null
         )
 
-        if (userToken.isNullOrEmpty()) {
+        if (email.isNullOrEmpty()) {
             Messages.showMessageDialog(
                 e.project,
                 "Email should not be empty.",
@@ -59,11 +74,11 @@ class LoginAction : AnAction() {
                 Messages.getErrorIcon()
             )
         } else {
-            val response = sendTokenToAPI(userToken)
+            sendTokenToAPI(email)
             Messages.showMessageDialog(
                 e.project,
-                "Server Response: $response",
-                "API Response",
+                "You have logged in to Watermelon Context as $email.",
+                "Success",
                 Messages.getInformationIcon()
             )
         }
@@ -75,6 +90,7 @@ class LoginAction : AnAction() {
     }
 
     private fun checkYourCondition(e: AnActionEvent): Boolean {
+        
         return true
     }
 }

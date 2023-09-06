@@ -90,7 +90,9 @@ class LoginAction : AnAction() {
     }
 
     private fun checkYourCondition(e: AnActionEvent): Boolean {
-        
-        return true
+        val passwordSafe = PasswordSafe.instance
+        val id = passwordSafe.getPassword(CredentialAttributes("WatermelonContext.id"))
+        val email = passwordSafe.getPassword(CredentialAttributes("WatermelonContext.email"))
+        return id.isNullOrEmpty() || email.isNullOrEmpty()
     }
 }

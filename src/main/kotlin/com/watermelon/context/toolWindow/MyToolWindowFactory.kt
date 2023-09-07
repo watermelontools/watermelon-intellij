@@ -1,6 +1,7 @@
 package com.watermelon.context.toolWindow
 
 import MyProjectService
+import com.intellij.credentialStore.CredentialAttributes
 import com.intellij.openapi.components.service
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.wm.ToolWindow
@@ -14,6 +15,11 @@ import javax.swing.BorderFactory
 import java.awt.Dimension
 import javax.swing.Box
 import javax.swing.JPanel
+import com.intellij.ide.passwordSafe.PasswordSafe
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.jsonObject
+import java.net.HttpURLConnection
+import java.net.URL
 
 class MyToolWindowFactory : ToolWindowFactory {
 
@@ -43,6 +49,12 @@ class MyToolWindowFactory : ToolWindowFactory {
         private val service = toolWindow.project.service<MyProjectService>()
 
         fun getContent(startLine: Int = 0, endLine: Int = 0) = JBPanel<JBPanel<*>>().apply {
+            val passwordSafe = PasswordSafe.instance
+            val id = passwordSafe.getPassword(CredentialAttributes("WatermelonContext.id"))
+            val email = passwordSafe.getPassword(CredentialAttributes("WatermelonContext.email"))
+            val apiUrl = "http://localhost:3000/api/extension/getContext"
+            val url = URL(apiUrl)
+            val connection = url.openConnection() as HttpURLConnection
 
             layout = BoxLayout(this, BoxLayout.Y_AXIS)
 
@@ -73,6 +85,40 @@ class MyToolWindowFactory : ToolWindowFactory {
                     layout = BoxLayout(this, BoxLayout.Y_AXIS)
                 }
                 add(panel)
+            }
+            try {
+                connection.requestMethod = "POST"
+                connection.doOutput = true
+                connection.setRequestProperty("Content-Type", "application/json")
+                connection.setRequestProperty("Charset", "UTF-8")
+                val commitMessages = commitHashes?.map { commitHash -> commitHash.message } ?: listOf<String>()
+                val commitListJson = commitMessages.joinToString(prefix = "[\"", separator = "\",\"", postfix = "\"]")
+
+                val payload = """
+    {
+        "email": $email,
+        "id": $id,
+        "repo": "watermelon",
+        "owner": "watermelontools",
+        "commitList": $commitListJson
+    }
+""".trimIndent()
+
+                connection.outputStream.write(payload.toByteArray())
+
+                val responseCode = connection.responseCode
+                if (responseCode == HttpURLConnection.HTTP_OK) {
+                    val jsonResponse = Json.parseToJsonElement(connection.inputStream.reader().readText()).jsonObject
+                    val data = jsonResponse["data"]?.jsonObject
+                    println("data $data")
+                    connection.inputStream.reader().readText()
+                } else {
+                    // Handle non-200 HTTP responses
+                    //println("Error: $responseCode")
+                }
+
+            } finally {
+                connection.disconnect()
             }
         }
     }

@@ -3,13 +3,10 @@ package com.watermelon.context.actions
 import com.intellij.credentialStore.CredentialAttributes
 import com.intellij.ide.BrowserUtil
 import com.intellij.ide.passwordSafe.PasswordSafe
-import com.intellij.ide.passwordSafe.PasswordSafe.*
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.ui.Messages
-import com.intellij.remoteServer.util.CloudConfigurationUtil.createCredentialAttributes
 import kotlinx.serialization.json.*
-import org.bouncycastle.cms.RecipientId.password
 import java.net.HttpURLConnection
 import java.net.URL
 
@@ -35,7 +32,7 @@ class LoginAction : AnAction() {
             connection.outputStream.write(payload.toByteArray())
 
             val responseCode = connection.responseCode
-            if (responseCode == HttpURLConnection.HTTP_OK) {
+            return if (responseCode == HttpURLConnection.HTTP_OK) {
                 val jsonResponse = Json.parseToJsonElement(connection.inputStream.reader().readText()).jsonObject
                 val data = jsonResponse["data"]?.jsonObject
                 val id = data?.get("id")?.toString()
@@ -44,10 +41,10 @@ class LoginAction : AnAction() {
                 val passwordSafe = PasswordSafe.instance
                 passwordSafe.setPassword(CredentialAttributes("WatermelonContext.id"), id)
                 passwordSafe.setPassword(CredentialAttributes("WatermelonContext.email"), email)
-                return connection.inputStream.reader().readText()
+                connection.inputStream.reader().readText()
             } else {
                 // Handle non-200 HTTP responses
-                return "Error: $responseCode"
+                "Error: $responseCode"
             }
         } finally {
             connection.disconnect()

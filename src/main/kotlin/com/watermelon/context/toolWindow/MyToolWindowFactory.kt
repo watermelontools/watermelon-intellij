@@ -16,9 +16,7 @@ import java.awt.Dimension
 import javax.swing.Box
 import javax.swing.JPanel
 import com.intellij.ide.passwordSafe.PasswordSafe
-import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.JsonObject
-import kotlinx.serialization.json.jsonObject
+import kotlinx.serialization.json.*
 import java.net.HttpURLConnection
 import java.net.URL
 
@@ -49,7 +47,7 @@ class MyToolWindowFactory : ToolWindowFactory {
 
         private val service = toolWindow.project.service<MyProjectService>()
         private fun extractValuesFromData(dataJson: JsonObject): List<Any?> {
-            return dataJson.keys.asSequence().map { key: String -> dataJson.get(key) }.toList()
+            return dataJson.keys.asSequence().map { key: String -> key }.toList()
         }
 
         fun getContent(startLine: Int = 0, endLine: Int = 0) = JBPanel<JBPanel<*>>().apply {
@@ -115,6 +113,77 @@ class MyToolWindowFactory : ToolWindowFactory {
                     val jsonResponse = Json.parseToJsonElement(connection.inputStream.reader().readText()).jsonObject
                     val data = jsonResponse["data"]?.jsonObject
                     val serviceList = extractValuesFromData(data!!)
+                    for (service in serviceList) {
+                        val titleLabel = JBLabel("$service").apply {
+                            font = font.deriveFont(Font.BOLD, 16f)
+                        }
+                        add(titleLabel)
+
+                        add(Box.createRigidArea(Dimension(0, 10)))
+                        val serviceData = data[service.toString()]
+                        when (serviceData) {
+                            is JsonObject -> {
+                            }
+
+                            is JsonArray -> {
+                                if (serviceData.size == 0) {
+                                    val commitLabel = JBLabel("No $service results found").apply {
+                                        font = font.deriveFont(Font.PLAIN, 14f)
+                                    }
+                                    add(commitLabel)
+                                    // Add a panel with vertical flow layout
+                                    // This will force each label onto a new line
+
+                                    val panel = JPanel().apply {
+                                        layout = BoxLayout(this, BoxLayout.Y_AXIS)
+                                    }
+                                    add(panel)
+                                } else {
+                                    for (serviceDataValue in serviceData) {
+                                        val serviceDataValueJson = serviceDataValue.jsonObject
+                                        val title = serviceDataValueJson["title"]?.jsonPrimitive?.content
+                                        val body = serviceDataValueJson["body"]?.jsonPrimitive?.content
+                                        val link = serviceDataValueJson["link"]?.jsonPrimitive?.content
+                                        val image = serviceDataValueJson["image"]?.jsonPrimitive?.content
+                                        // Now you can use title, body, link, and image in your logic
+                                        val commitLabel = JBLabel("$title $body").apply {
+                                            font = font.deriveFont(Font.PLAIN, 14f)
+                                        }
+                                        add(commitLabel)
+                                        // Add a panel with vertical flow layout
+                                        // This will force each label onto a new line
+
+                                        val panel = JPanel().apply {
+                                            layout = BoxLayout(this, BoxLayout.Y_AXIS)
+                                        }
+                                        add(panel)
+
+                                    }
+                                }
+
+                            }
+
+                            else -> {
+                                if (serviceData.toString().contains(Regex("no .* token"))) {
+                                    val commitLabel = JBLabel("Click here to login to $service").apply {
+                                        font = font.deriveFont(Font.PLAIN, 14f)
+                                    }
+                                    add(commitLabel)
+                                    // Add a panel with vertical flow layout
+                                    // This will force each label onto a new line
+
+                                    val panel = JPanel().apply {
+                                        layout = BoxLayout(this, BoxLayout.Y_AXIS)
+                                    }
+                                    add(panel)
+                                }
+                            }
+
+
+                        }
+
+                    }
+
                     connection.inputStream.reader().readText()
                 } else {
                     // Handle non-200 HTTP responses
@@ -127,3 +196,4 @@ class MyToolWindowFactory : ToolWindowFactory {
         }
     }
 }
+

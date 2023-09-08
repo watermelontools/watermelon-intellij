@@ -17,8 +17,8 @@ import javax.swing.Box
 import javax.swing.JPanel
 import com.intellij.ide.passwordSafe.PasswordSafe
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.jsonObject
-import net.minidev.json.JSONObject
 import java.net.HttpURLConnection
 import java.net.URL
 
@@ -48,7 +48,7 @@ class MyToolWindowFactory : ToolWindowFactory {
     class MyToolWindow(toolWindow: ToolWindow) {
 
         private val service = toolWindow.project.service<MyProjectService>()
-        private fun extractValuesFromData(dataJson: JSONObject): List<Any?> {
+        private fun extractValuesFromData(dataJson: JsonObject): List<Any?> {
             return dataJson.keys.asSequence().map { key: String -> dataJson.get(key) }.toList()
         }
 

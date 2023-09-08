@@ -10,15 +10,14 @@ import com.intellij.ui.components.JBLabel
 import com.intellij.ui.components.JBPanel
 import com.intellij.ui.content.ContentFactory
 import java.awt.Font
-import javax.swing.BoxLayout
-import javax.swing.BorderFactory
 import java.awt.Dimension
-import javax.swing.Box
-import javax.swing.JPanel
 import com.intellij.ide.passwordSafe.PasswordSafe
 import kotlinx.serialization.json.*
+import java.awt.CardLayout
 import java.net.HttpURLConnection
 import java.net.URL
+import javax.swing.*
+import javax.swing.*
 
 class MyToolWindowFactory : ToolWindowFactory {
 
@@ -44,6 +43,33 @@ class MyToolWindowFactory : ToolWindowFactory {
     override fun shouldBeAvailable(project: Project) = true
 
     class MyToolWindow(toolWindow: ToolWindow) {
+
+
+        class ExpandablePanel(title: String, body: String) : JPanel() {
+            init {
+                println("ExpandablePanel $title $body")
+                val titleButton = JButton(title)
+                val bodyLabel = JLabel(body)
+
+                val titlePanel = JPanel()
+                titlePanel.add(titleButton)
+
+                val expandedPanel = JPanel()
+                expandedPanel.layout = BoxLayout(expandedPanel, BoxLayout.Y_AXIS)
+                expandedPanel.add(titleButton)
+                expandedPanel.add(bodyLabel)
+
+                add(titlePanel, "TitleOnly")
+                add(expandedPanel, "Expanded")
+
+                titleButton.addActionListener {
+                    println("Clicked $title")
+                }
+            }
+
+
+        }
+
 
         private val service = toolWindow.project.service<MyProjectService>()
         private fun extractValuesFromData(dataJson: JsonObject): List<Any?> {
@@ -102,7 +128,7 @@ class MyToolWindowFactory : ToolWindowFactory {
         "id": $id,
         "repo": "watermelon",
         "owner": "watermelontools",
-        "commitList": ${commitListJson.toString()}
+        "commitList": ${commitListJson}
     }
 """.trimIndent()
 
@@ -118,70 +144,46 @@ class MyToolWindowFactory : ToolWindowFactory {
                             font = font.deriveFont(Font.BOLD, 16f)
                         }
                         add(titleLabel)
-
                         add(Box.createRigidArea(Dimension(0, 10)))
                         val serviceData = data[service.toString()]
+
                         when (serviceData) {
                             is JsonObject -> {
+                                // Handle JsonObject case
                             }
 
                             is JsonArray -> {
-                                if (serviceData.size == 0) {
+                                if (serviceData.isEmpty()) {
                                     val commitLabel = JBLabel("No $service results found").apply {
                                         font = font.deriveFont(Font.PLAIN, 14f)
                                     }
                                     add(commitLabel)
-                                    // Add a panel with vertical flow layout
-                                    // This will force each label onto a new line
-
-                                    val panel = JPanel().apply {
-                                        layout = BoxLayout(this, BoxLayout.Y_AXIS)
-                                    }
-                                    add(panel)
                                 } else {
-                                    for (serviceDataValue in serviceData) {
-                                        val serviceDataValueJson = serviceDataValue.jsonObject
+                                    serviceData.forEach { serviceDataElement ->
+                                        val serviceDataValueJson = serviceDataElement.jsonObject
                                         val title = serviceDataValueJson["title"]?.jsonPrimitive?.content
                                         val body = serviceDataValueJson["body"]?.jsonPrimitive?.content
-                                        val link = serviceDataValueJson["link"]?.jsonPrimitive?.content
-                                        val image = serviceDataValueJson["image"]?.jsonPrimitive?.content
-                                        // Now you can use title, body, link, and image in your logic
-                                        val commitLabel = JBLabel("$title $body").apply {
-                                            font = font.deriveFont(Font.PLAIN, 14f)
-                                        }
-                                        add(commitLabel)
-                                        // Add a panel with vertical flow layout
-                                        // This will force each label onto a new line
 
-                                        val panel = JPanel().apply {
-                                            layout = BoxLayout(this, BoxLayout.Y_AXIS)
-                                        }
-                                        add(panel)
-
+                                        val expandablePanel = ExpandablePanel("$title", "$body")
+                                        add(expandablePanel)
                                     }
                                 }
-
                             }
 
-                            else -> {
-                                if (serviceData.toString().contains(Regex("no .* token"))) {
+                            is JsonPrimitive -> {
+                                val message = serviceData.content
+                                if (message.contains(Regex("no .* token"))) {
                                     val commitLabel = JBLabel("Click here to login to $service").apply {
                                         font = font.deriveFont(Font.PLAIN, 14f)
                                     }
                                     add(commitLabel)
-                                    // Add a panel with vertical flow layout
-                                    // This will force each label onto a new line
-
-                                    val panel = JPanel().apply {
-                                        layout = BoxLayout(this, BoxLayout.Y_AXIS)
-                                    }
-                                    add(panel)
                                 }
                             }
 
-
+                            else -> {
+                                // Handle any other cases if needed
+                            }
                         }
-
                     }
 
                     connection.inputStream.reader().readText()

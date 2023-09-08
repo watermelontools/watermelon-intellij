@@ -18,6 +18,7 @@ import javax.swing.JPanel
 import com.intellij.ide.passwordSafe.PasswordSafe
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.jsonObject
+import net.minidev.json.JSONObject
 import java.net.HttpURLConnection
 import java.net.URL
 
@@ -47,6 +48,9 @@ class MyToolWindowFactory : ToolWindowFactory {
     class MyToolWindow(toolWindow: ToolWindow) {
 
         private val service = toolWindow.project.service<MyProjectService>()
+        private fun extractValuesFromData(dataJson: JSONObject): List<Any?> {
+            return dataJson.keys.asSequence().map { key: String -> dataJson.get(key) }.toList()
+        }
 
         fun getContent(startLine: Int = 0, endLine: Int = 0) = JBPanel<JBPanel<*>>().apply {
             val passwordSafe = PasswordSafe.instance
@@ -100,7 +104,7 @@ class MyToolWindowFactory : ToolWindowFactory {
         "id": $id,
         "repo": "watermelon",
         "owner": "watermelontools",
-        "commitList": $commitListJson
+        "commitList": ${commitListJson.toString()}
     }
 """.trimIndent()
 
@@ -110,7 +114,7 @@ class MyToolWindowFactory : ToolWindowFactory {
                 if (responseCode == HttpURLConnection.HTTP_OK) {
                     val jsonResponse = Json.parseToJsonElement(connection.inputStream.reader().readText()).jsonObject
                     val data = jsonResponse["data"]?.jsonObject
-                    println("data $data")
+                    val serviceList = extractValuesFromData(data!!)
                     connection.inputStream.reader().readText()
                 } else {
                     // Handle non-200 HTTP responses

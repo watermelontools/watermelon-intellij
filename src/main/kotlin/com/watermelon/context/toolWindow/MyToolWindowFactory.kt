@@ -13,10 +13,8 @@ import java.awt.Font
 import java.awt.Dimension
 import com.intellij.ide.passwordSafe.PasswordSafe
 import kotlinx.serialization.json.*
-import java.awt.CardLayout
 import java.net.HttpURLConnection
 import java.net.URL
-import javax.swing.*
 import javax.swing.*
 
 class MyToolWindowFactory : ToolWindowFactory {
@@ -72,129 +70,135 @@ class MyToolWindowFactory : ToolWindowFactory {
 
 
         private val service = toolWindow.project.service<MyProjectService>()
-        private fun extractValuesFromData(dataJson: JsonObject): List<Any?> {
-            return dataJson.keys.asSequence().map { key: String -> key }.toList()
-        }
 
-        fun getContent(startLine: Int = 0, endLine: Int = 0) = JBPanel<JBPanel<*>>().apply {
-            val passwordSafe = PasswordSafe.instance
-            val id = passwordSafe.getPassword(CredentialAttributes("WatermelonContext.id"))
-            val email = passwordSafe.getPassword(CredentialAttributes("WatermelonContext.email"))
+
+        private fun makeApiCall(commitMessages: List<String>, email: String?, id: String?): JsonObject? {
             val apiUrl = "http://localhost:3000/api/extension/getContext"
             val url = URL(apiUrl)
             val connection = url.openConnection() as HttpURLConnection
-
-            layout = BoxLayout(this, BoxLayout.Y_AXIS)
-
-            border = BorderFactory.createEmptyBorder(10, 10, 10, 10)
-
-            val titleLabel = JBLabel("Commit history").apply {
-                font = font.deriveFont(Font.BOLD, 16f)
-            }
-            add(titleLabel)
-
-            add(Box.createRigidArea(Dimension(0, 10)))
-
-            val commitHashes = if (startLine == 0 && endLine == 0) {
-                service.getGitBlame()
-            } else {
-                service.getPartialGitBlame(startLine, endLine)
-            }
-            commitHashes?.forEach { commitHash ->
-
-                val (hash, author, dateTime, lineNumber, message) = commitHash
-                val commitLabel = JBLabel("$hash: $message").apply {
-                    font = font.deriveFont(Font.PLAIN, 14f)
-                }
-                add(commitLabel)
-                // Add a panel with vertical flow layout
-                // This will force each label onto a new line
-                val panel = JPanel().apply {
-                    layout = BoxLayout(this, BoxLayout.Y_AXIS)
-                }
-                add(panel)
-            }
             try {
                 connection.requestMethod = "POST"
                 connection.doOutput = true
                 connection.setRequestProperty("Content-Type", "application/json")
                 connection.setRequestProperty("Charset", "UTF-8")
-                val commitMessages = commitHashes?.map { commitHash -> commitHash.message } ?: listOf<String>()
+
                 val commitListJson = commitMessages.joinToString(prefix = "[\"", separator = "\",\"", postfix = "\"]")
-
                 val payload = """
-    {
-        "email": $email,
-        "id": $id,
-        "repo": "watermelon",
-        "owner": "watermelontools",
-        "commitList": ${commitListJson}
-    }
-""".trimIndent()
-
+        {
+            "email": $email,
+            "id": $id,
+            "repo": "watermelon",
+            "owner": "watermelontools",
+            "commitList": $commitListJson
+        }
+    """.trimIndent()
                 connection.outputStream.write(payload.toByteArray())
-
                 val responseCode = connection.responseCode
-                if (responseCode == HttpURLConnection.HTTP_OK) {
-                    val jsonResponse = Json.parseToJsonElement(connection.inputStream.reader().readText()).jsonObject
-                    val data = jsonResponse["data"]?.jsonObject
-                    val serviceList = extractValuesFromData(data!!)
-                    for (service in serviceList) {
-                        val titleLabel = JBLabel("$service").apply {
-                            font = font.deriveFont(Font.BOLD, 16f)
-                        }
-                        add(titleLabel)
-                        add(Box.createRigidArea(Dimension(0, 10)))
-                        val serviceData = data[service.toString()]
-
-                        when (serviceData) {
-                            is JsonObject -> {
-                                // Handle JsonObject case
-                            }
-
-                            is JsonArray -> {
-                                if (serviceData.isEmpty()) {
-                                    val commitLabel = JBLabel("No $service results found").apply {
-                                        font = font.deriveFont(Font.PLAIN, 14f)
-                                    }
-                                    add(commitLabel)
-                                } else {
-                                    serviceData.forEach { serviceDataElement ->
-                                        val serviceDataValueJson = serviceDataElement.jsonObject
-                                        val title = serviceDataValueJson["title"]?.jsonPrimitive?.content
-                                        val body = serviceDataValueJson["body"]?.jsonPrimitive?.content
-
-                                        val expandablePanel = ExpandablePanel("$title", "$body")
-                                        add(expandablePanel)
-                                    }
-                                }
-                            }
-
-                            is JsonPrimitive -> {
-                                val message = serviceData.content
-                                if (message.contains(Regex("no .* token"))) {
-                                    val commitLabel = JBLabel("Click here to login to $service").apply {
-                                        font = font.deriveFont(Font.PLAIN, 14f)
-                                    }
-                                    add(commitLabel)
-                                }
-                            }
-
-                            else -> {
-                                // Handle any other cases if needed
-                            }
-                        }
-                    }
-
-                    connection.inputStream.reader().readText()
+                return if (responseCode == HttpURLConnection.HTTP_OK) {
+                    Json.parseToJsonElement(connection.inputStream.reader().readText()).jsonObject
                 } else {
-                    // Handle non-200 HTTP responses
-                    //println("Error: $responseCode")
+                    null
                 }
-
             } finally {
                 connection.disconnect()
             }
+        }
+
+        data class ServiceData(val title: String, val body: String, val link: String? = null)
+
+        private fun setupServiceUI(serviceDataArray: List<ServiceData>, serviceName: String) =
+            JBPanel<JBPanel<*>>().apply {
+                layout = BoxLayout(this, BoxLayout.Y_AXIS)
+
+                border = BorderFactory.createEmptyBorder(10, 10, 10, 10)
+
+                val titleLabel = JBLabel(serviceName).apply {
+                    font = font.deriveFont(Font.BOLD, 16f)
+                }
+                add(titleLabel)
+                for (serviceData in serviceDataArray) {
+                    val title = serviceData.title
+                    val body = serviceData.body
+
+                    val expandablePanel = ExpandablePanel(title, body)
+                    add(expandablePanel)
+                }
+            }
+
+        fun getContent(startLine: Int = 0, endLine: Int = 0) = JBPanel<JBPanel<*>>().apply {
+            val passwordSafe = PasswordSafe.instance
+            val id = passwordSafe.getPassword(CredentialAttributes("WatermelonContext.id"))
+            val email = passwordSafe.getPassword(CredentialAttributes("WatermelonContext.email"))
+            var servicePanels = emptyList<JBPanel<*>>()
+            val commitHashes = if (startLine == 0 && endLine == 0) {
+                service.getGitBlame()
+            } else {
+                service.getPartialGitBlame(startLine, endLine)
+            }
+
+            val commitMessages = commitHashes?.map { commitHash -> commitHash.message } ?: listOf<String>()
+            println("commitMessages $commitMessages")
+            val apiResponse = makeApiCall(commitMessages, email, id)
+            val data = apiResponse?.get("data")?.jsonObject
+
+            val commitList = commitHashes?.map { commitHash ->
+                ServiceData(
+                    title = commitHash.message,
+                    body = "${commitHash.hash} - ${commitHash.author} - ${commitHash.date}"
+                )
+            }!!
+            servicePanels.plus(setupServiceUI(commitList, "Commits"))
+
+            val serviceNames = data?.keys?.asSequence()?.map { key: String -> key }?.toList()
+            if (serviceNames != null) {
+                for (serviceName in serviceNames) {
+                    println("serviceName $serviceName")
+                    when (val serviceData = data[serviceName]) {
+                        is JsonObject -> {
+                            println("serviceData $serviceData")
+                            // Handle JsonObject case
+                        }
+
+                        is JsonArray -> {
+                            if (serviceData.isEmpty()) {
+                                val commitPanel = setupServiceUI(emptyList(), serviceName ?: "")
+                                servicePanels = servicePanels + (commitPanel)
+                                add(commitPanel)
+                            } else {
+
+                                val returnArray = serviceData.map { serviceDataElement ->
+                                    val serviceDataValueJson = serviceDataElement.jsonObject
+                                    val title = serviceDataValueJson["title"]?.jsonPrimitive?.content
+                                    val body = serviceDataValueJson["body"]?.jsonPrimitive?.content
+                                    val link = serviceDataValueJson["link"]?.jsonPrimitive?.content
+                                    ServiceData(title ?: "", body ?: "", link)
+                                }
+                                servicePanels = servicePanels + (setupServiceUI(returnArray, serviceName ?: ""))
+
+                            }
+                        }
+
+                        is JsonPrimitive -> {
+                            val message = serviceData.content
+                            if (message.contains(Regex("no .* token"))) {
+
+                                servicePanels = servicePanels + (setupServiceUI(emptyList(), serviceName ?: ""))
+                            }
+                        }
+
+                        else -> {
+                            // Handle any other cases if needed
+                        }
+                    }
+                }
+            }
+            println("servicePanels ${servicePanels.size}")
+            // add the servicePanels to the UI
+            servicePanels.forEach { servicePanel ->
+                add(servicePanel)
+            }
+
+
         }
     }
 }

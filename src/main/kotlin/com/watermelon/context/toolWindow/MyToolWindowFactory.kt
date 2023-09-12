@@ -18,6 +18,7 @@ import java.net.URL
 import javax.swing.*
 
 class MyToolWindowFactory : ToolWindowFactory {
+    data class ServiceData(val title: String, val body: String, val link: String? = null)
 
     fun createToolWindowContent(project: Project, toolWindow: ToolWindow, startLine: Int, endLine: Int) {
         // this only runs once
@@ -41,7 +42,7 @@ class MyToolWindowFactory : ToolWindowFactory {
     override fun shouldBeAvailable(project: Project) = true
 
     class MyToolWindow(toolWindow: ToolWindow) {
-
+        private val service = toolWindow.project.service<MyProjectService>()
 
         class ExpandablePanel(title: String, body: String) : JPanel() {
             init {
@@ -68,8 +69,24 @@ class MyToolWindowFactory : ToolWindowFactory {
 
         }
 
+        private fun setupServiceUI(serviceDataArray: List<ServiceData>, serviceName: String) =
+            JBPanel<JBPanel<*>>().apply {
+                layout = BoxLayout(this, BoxLayout.Y_AXIS)
 
-        private val service = toolWindow.project.service<MyProjectService>()
+                border = BorderFactory.createEmptyBorder(10, 10, 10, 10)
+
+                val titleLabel = JBLabel(serviceName).apply {
+                    font = font.deriveFont(Font.BOLD, 16f)
+                }
+                add(titleLabel)
+                for (serviceData in serviceDataArray) {
+                    val title = serviceData.title
+                    val body = serviceData.body
+
+                    val expandablePanel = ExpandablePanel(title, body)
+                    add(expandablePanel)
+                }
+            }
 
 
         private fun makeApiCall(commitMessages: List<String>, email: String?, id: String?): JsonObject? {
@@ -104,26 +121,6 @@ class MyToolWindowFactory : ToolWindowFactory {
             }
         }
 
-        data class ServiceData(val title: String, val body: String, val link: String? = null)
-
-        private fun setupServiceUI(serviceDataArray: List<ServiceData>, serviceName: String) =
-            JBPanel<JBPanel<*>>().apply {
-                layout = BoxLayout(this, BoxLayout.Y_AXIS)
-
-                border = BorderFactory.createEmptyBorder(10, 10, 10, 10)
-
-                val titleLabel = JBLabel(serviceName).apply {
-                    font = font.deriveFont(Font.BOLD, 16f)
-                }
-                add(titleLabel)
-                for (serviceData in serviceDataArray) {
-                    val title = serviceData.title
-                    val body = serviceData.body
-
-                    val expandablePanel = ExpandablePanel(title, body)
-                    add(expandablePanel)
-                }
-            }
 
         fun getContent(startLine: Int = 0, endLine: Int = 0) = JBPanel<JBPanel<*>>().apply {
             val passwordSafe = PasswordSafe.instance
@@ -197,7 +194,6 @@ class MyToolWindowFactory : ToolWindowFactory {
             servicePanels.forEach { servicePanel ->
                 add(servicePanel)
             }
-
 
         }
     }

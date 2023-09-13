@@ -50,13 +50,14 @@ class MyToolWindowFactory : ToolWindowFactory {
             init {
                 val titleButton = JButton(title)
                 val formattedBody = "<html>" + body.replace("\n", "<br>") + "</html>"
-                val bodyLabel = JLabel(formattedBody)
+                val bodyButton = JButton(formattedBody)
                 val expandedPanel = JPanel().apply {
                     layout = BoxLayout(this, BoxLayout.Y_AXIS)
                 }
+                titleButton.maximumSize = titleButton.preferredSize
                 expandedPanel.add(titleButton)
-                expandedPanel.add(bodyLabel)
-                bodyLabel.isOpaque = true
+                bodyButton.maximumSize = bodyButton.preferredSize
+                expandedPanel.add(bodyButton)
 
                 // Use CardLayout for ExpandablePanel
                 layout = cardLayout
@@ -64,6 +65,18 @@ class MyToolWindowFactory : ToolWindowFactory {
                 add(expandedPanel, "Expanded")
 
                 titleButton.addActionListener {
+                    // Switch between panels
+                    if ((layout as CardLayout) == cardLayout) {
+                        if (expandedPanel.isVisible) {
+                            cardLayout.show(this, "TitleOnly")
+                        } else {
+                            cardLayout.show(this, "Expanded")
+                        }
+                    }
+                    revalidate()
+                    repaint()
+                }
+                bodyButton.addActionListener {
                     // Switch between panels
                     if ((layout as CardLayout) == cardLayout) {
                         if (expandedPanel.isVisible) {

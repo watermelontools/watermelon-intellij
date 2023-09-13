@@ -11,7 +11,6 @@ import com.intellij.ui.components.JBPanel
 import com.intellij.ui.content.ContentFactory
 import java.awt.Font
 import com.intellij.ide.passwordSafe.PasswordSafe
-import com.intellij.ui.JBColor
 import kotlinx.serialization.json.*
 import java.awt.CardLayout
 import java.net.HttpURLConnection
@@ -52,15 +51,11 @@ class MyToolWindowFactory : ToolWindowFactory {
                 val titleButton = JButton(title)
                 val formattedBody = "<html>" + body.replace("\n", "<br>") + "</html>"
                 val bodyLabel = JLabel(formattedBody)
-
-
                 val expandedPanel = JPanel().apply {
                     layout = BoxLayout(this, BoxLayout.Y_AXIS)
-                    add(titleButton)
-                    add(bodyLabel)
                 }
-
-                expandedPanel.background = JBColor.BLUE
+                expandedPanel.add(titleButton)
+                expandedPanel.add(bodyLabel)
                 bodyLabel.isOpaque = true
 
                 // Use CardLayout for ExpandablePanel
@@ -135,7 +130,9 @@ class MyToolWindowFactory : ToolWindowFactory {
         }
 
 
-        fun getContent(startLine: Int = 0, endLine: Int = 0) = JBPanel<JBPanel<*>>().apply {
+        fun getContent(startLine: Int = 0, endLine: Int = 0): JComponent = JBPanel<JBPanel<*>>().apply {
+            val mainPanel = JBPanel<JBPanel<*>>()
+            mainPanel.layout = BoxLayout(mainPanel, BoxLayout.Y_AXIS)  // For vertical stacking
             val passwordSafe = PasswordSafe.instance
             val id = passwordSafe.getPassword(CredentialAttributes("WatermelonContext.id"))
             val email = passwordSafe.getPassword(CredentialAttributes("WatermelonContext.email"))
@@ -156,7 +153,7 @@ class MyToolWindowFactory : ToolWindowFactory {
                     body = "${commitHash.hash} - ${commitHash.author} - ${commitHash.date}"
                 )
             }!!
-            servicePanels.plus(setupServiceUI(commitList, "Commits"))
+            servicePanels = servicePanels + (setupServiceUI(commitList, "Commits"))
 
             val serviceNames = data?.keys?.asSequence()?.map { key: String -> key }?.toList()
             if (serviceNames != null) {
@@ -168,7 +165,7 @@ class MyToolWindowFactory : ToolWindowFactory {
 
                         is JsonArray -> {
                             if (serviceData.isEmpty()) {
-                                val commitPanel = setupServiceUI(emptyList(), serviceName ?: "")
+                                val commitPanel = setupServiceUI(emptyList(), serviceName)
                                 servicePanels = servicePanels + (commitPanel)
                                 add(commitPanel)
                             } else {
@@ -182,7 +179,7 @@ class MyToolWindowFactory : ToolWindowFactory {
                                 }
                                 servicePanels = servicePanels + (setupServiceUI(
                                     returnArray,
-                                    "$serviceName (${serviceData.size})" ?: ""
+                                    "$serviceName (${serviceData.size})"
                                 ))
 
                             }
@@ -204,9 +201,9 @@ class MyToolWindowFactory : ToolWindowFactory {
             }
             // add the servicePanels to the UI
             servicePanels.forEach { servicePanel ->
-                add(servicePanel)
+                mainPanel.add(servicePanel)
             }
-
+            return (mainPanel)
         }
     }
 }

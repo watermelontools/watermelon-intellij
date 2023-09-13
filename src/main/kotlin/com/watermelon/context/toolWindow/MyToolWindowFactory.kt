@@ -10,9 +10,10 @@ import com.intellij.ui.components.JBLabel
 import com.intellij.ui.components.JBPanel
 import com.intellij.ui.content.ContentFactory
 import java.awt.Font
-import java.awt.Dimension
 import com.intellij.ide.passwordSafe.PasswordSafe
+import com.intellij.ui.JBColor
 import kotlinx.serialization.json.*
+import java.awt.CardLayout
 import java.net.HttpURLConnection
 import java.net.URL
 import javax.swing.*
@@ -45,48 +46,59 @@ class MyToolWindowFactory : ToolWindowFactory {
         private val service = toolWindow.project.service<MyProjectService>()
 
         class ExpandablePanel(title: String, body: String) : JPanel() {
+            private val cardLayout = CardLayout()
+
             init {
-                println("ExpandablePanel $title $body")
                 val titleButton = JButton(title)
                 val bodyLabel = JLabel(body)
 
-                val titlePanel = JPanel()
-                titlePanel.add(titleButton)
 
-                val expandedPanel = JPanel()
-                expandedPanel.layout = BoxLayout(expandedPanel, BoxLayout.Y_AXIS)
-                expandedPanel.add(titleButton)
-                expandedPanel.add(bodyLabel)
+                val expandedPanel = JPanel().apply {
+                    layout = BoxLayout(this, BoxLayout.Y_AXIS)
+                    add(titleButton)
+                    add(bodyLabel)
+                }
 
-                add(titlePanel, "TitleOnly")
+                expandedPanel.background = JBColor.BLUE
+                bodyLabel.isOpaque = true
+
+                // Use CardLayout for ExpandablePanel
+                layout = cardLayout
+                add(titleButton, "TitleOnly")
                 add(expandedPanel, "Expanded")
 
                 titleButton.addActionListener {
-                    println("Clicked $title")
+                    // Switch between panels
+                    if ((layout as CardLayout) == cardLayout) {
+                        if (expandedPanel.isVisible) {
+                            cardLayout.show(this, "TitleOnly")
+                        } else {
+                            cardLayout.show(this, "Expanded")
+                        }
+                    }
+                    revalidate()
+                    repaint()
                 }
             }
-
-
         }
 
-        private fun setupServiceUI(serviceDataArray: List<ServiceData>, serviceName: String) =
-            JBPanel<JBPanel<*>>().apply {
-                layout = BoxLayout(this, BoxLayout.Y_AXIS)
 
+        private fun setupServiceUI(serviceDataArray: List<ServiceData>, serviceName: String): JBPanel<JBPanel<*>> {
+            return JBPanel<JBPanel<*>>().apply {
+                layout = BoxLayout(this, BoxLayout.Y_AXIS)
                 border = BorderFactory.createEmptyBorder(10, 10, 10, 10)
 
                 val titleLabel = JBLabel(serviceName).apply {
                     font = font.deriveFont(Font.BOLD, 16f)
                 }
                 add(titleLabel)
-                for (serviceData in serviceDataArray) {
-                    val title = serviceData.title
-                    val body = serviceData.body
 
-                    val expandablePanel = ExpandablePanel(title, body)
+                serviceDataArray.forEach { data ->
+                    val expandablePanel = ExpandablePanel(data.title, data.body)
                     add(expandablePanel)
                 }
             }
+        }
 
 
         private fun makeApiCall(commitMessages: List<String>, email: String?, id: String?): JsonObject? {
@@ -134,7 +146,6 @@ class MyToolWindowFactory : ToolWindowFactory {
             }
 
             val commitMessages = commitHashes?.map { commitHash -> commitHash.message } ?: listOf<String>()
-            println("commitMessages $commitMessages")
             val apiResponse = makeApiCall(commitMessages, email, id)
             val data = apiResponse?.get("data")?.jsonObject
 
@@ -149,10 +160,8 @@ class MyToolWindowFactory : ToolWindowFactory {
             val serviceNames = data?.keys?.asSequence()?.map { key: String -> key }?.toList()
             if (serviceNames != null) {
                 for (serviceName in serviceNames) {
-                    println("serviceName $serviceName")
                     when (val serviceData = data[serviceName]) {
                         is JsonObject -> {
-                            println("serviceData $serviceData")
                             // Handle JsonObject case
                         }
 
@@ -170,7 +179,10 @@ class MyToolWindowFactory : ToolWindowFactory {
                                     val link = serviceDataValueJson["link"]?.jsonPrimitive?.content
                                     ServiceData(title ?: "", body ?: "", link)
                                 }
-                                servicePanels = servicePanels + (setupServiceUI(returnArray, serviceName ?: ""))
+                                servicePanels = servicePanels + (setupServiceUI(
+                                    returnArray,
+                                    "$serviceName (${serviceData.size})" ?: ""
+                                ))
 
                             }
                         }
@@ -189,7 +201,6 @@ class MyToolWindowFactory : ToolWindowFactory {
                     }
                 }
             }
-            println("servicePanels ${servicePanels.size}")
             // add the servicePanels to the UI
             servicePanels.forEach { servicePanel ->
                 add(servicePanel)

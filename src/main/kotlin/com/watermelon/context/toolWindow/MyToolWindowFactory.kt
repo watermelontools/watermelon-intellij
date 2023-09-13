@@ -50,7 +50,8 @@ class MyToolWindowFactory : ToolWindowFactory {
 
             init {
                 val titleButton = JButton(title)
-                val bodyLabel = JLabel(body)
+                val formattedBody = "<html>" + body.replace("\n", "<br>") + "</html>"
+                val bodyLabel = JLabel(formattedBody)
 
 
                 val expandedPanel = JPanel().apply {

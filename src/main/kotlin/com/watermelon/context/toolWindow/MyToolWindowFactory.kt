@@ -9,14 +9,13 @@ import com.intellij.openapi.wm.ToolWindowFactory
 import com.intellij.ui.components.JBLabel
 import com.intellij.ui.components.JBPanel
 import com.intellij.ui.content.ContentFactory
-import java.awt.Font
 import com.intellij.ide.passwordSafe.PasswordSafe
 import com.intellij.ui.components.JBScrollPane
 import kotlinx.serialization.json.*
-import java.awt.CardLayout
-import java.awt.Dimension
-import java.awt.FlowLayout
+import java.awt.*
 import java.awt.event.ActionListener
+import java.awt.event.MouseAdapter
+import java.awt.event.MouseEvent
 import java.net.HttpURLConnection
 import java.net.URL
 import javax.swing.*
@@ -50,22 +49,43 @@ class MyToolWindowFactory : ToolWindowFactory {
 
         class ExpandablePanel(title: String, body: String) : JPanel() {
             private val cardLayout = CardLayout()
+            override fun getMaximumSize(): Dimension {
+                return Dimension(parent?.width ?: super.getMaximumSize().width, super.getMaximumSize().height)
+            }
 
             init {
+                // Assuming the rest of your code remains the same...
+
                 val titleButton = JButton(title)
-                val formattedBody = "<html>" + body.replace("\n", "<br>") + "</html>"
-                val bodyButton = JButton(formattedBody)
+
+                val bodyTextArea = JTextArea(body).apply {
+                    wrapStyleWord = true
+                    lineWrap = true
+                    isEditable = false
+                    isOpaque = false
+                    border = null
+                    background = null
+                    font = UIManager.getFont("Button.font")
+                    cursor = Cursor.getPredefinedCursor(Cursor.HAND_CURSOR)
+                }
+
+
+                val titlePanel = JPanel().apply {
+                    layout = BoxLayout(this, BoxLayout.Y_AXIS)
+                    maximumSize = Dimension(10, 10)
+                }
                 val expandedPanel = JPanel().apply {
                     layout = BoxLayout(this, BoxLayout.Y_AXIS)
+                    maximumSize = Dimension(10, 10)
                 }
-                titleButton.maximumSize = titleButton.preferredSize
-                bodyButton.maximumSize = bodyButton.preferredSize
 
-                expandedPanel.add(titleButton)
-                expandedPanel.add(bodyButton)
+                titlePanel.add(titleButton)
+                expandedPanel.add(bodyTextArea)
+
+
                 // Use CardLayout for ExpandablePanel
                 layout = cardLayout
-                add(titleButton, "TitleOnly")
+                add(titlePanel, "TitleOnly")
                 add(expandedPanel, "Expanded")
 
                 val switchPanelListener = ActionListener {
@@ -82,7 +102,11 @@ class MyToolWindowFactory : ToolWindowFactory {
                 }
 
                 titleButton.addActionListener(switchPanelListener)
-                bodyButton.addActionListener(switchPanelListener)
+                bodyTextArea.addMouseListener(object : MouseAdapter() {
+                    override fun mouseClicked(e: MouseEvent?) {
+                        switchPanelListener.actionPerformed(null)
+                    }
+                })
             }
         }
 

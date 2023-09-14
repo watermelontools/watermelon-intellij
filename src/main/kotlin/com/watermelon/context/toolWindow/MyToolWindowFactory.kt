@@ -11,6 +11,7 @@ import com.intellij.ui.components.JBPanel
 import com.intellij.ui.content.ContentFactory
 import java.awt.Font
 import com.intellij.ide.passwordSafe.PasswordSafe
+import com.intellij.ui.components.JBScrollPane
 import kotlinx.serialization.json.*
 import java.awt.CardLayout
 import java.net.HttpURLConnection
@@ -216,7 +217,7 @@ class MyToolWindowFactory : ToolWindowFactory {
             servicePanels.forEach { servicePanel ->
                 mainPanel.add(servicePanel)
             }
-            return (mainPanel)
+            return JBScrollPane(mainPanel)
         }
     }
 }

@@ -89,14 +89,8 @@ class MyToolWindowFactory : ToolWindowFactory {
                 add(expandedPanel, "Expanded")
 
                 val switchPanelListener = ActionListener {
-                    // Switch between panels
-                    if ((layout as CardLayout) == cardLayout) {
-                        if (expandedPanel.isVisible) {
-                            cardLayout.show(this@ExpandablePanel, "TitleOnly")
-                        } else {
-                            cardLayout.show(this@ExpandablePanel, "Expanded")
-                        }
-                    }
+                    remove(titlePanel)
+                    add(expandedPanel)
                     revalidate()
                     repaint()
                 }
@@ -104,7 +98,10 @@ class MyToolWindowFactory : ToolWindowFactory {
                 titleButton.addActionListener(switchPanelListener)
                 bodyTextArea.addMouseListener(object : MouseAdapter() {
                     override fun mouseClicked(e: MouseEvent?) {
-                        switchPanelListener.actionPerformed(null)
+                        remove(expandedPanel)
+                        add(titlePanel)
+                        revalidate()
+                        repaint()
                     }
                 })
             }

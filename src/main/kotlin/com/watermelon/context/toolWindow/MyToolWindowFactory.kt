@@ -14,6 +14,7 @@ import com.intellij.ide.passwordSafe.PasswordSafe
 import com.intellij.ui.components.JBScrollPane
 import kotlinx.serialization.json.*
 import java.awt.CardLayout
+import java.awt.event.ActionListener
 import java.net.HttpURLConnection
 import java.net.URL
 import javax.swing.*
@@ -65,30 +66,21 @@ class MyToolWindowFactory : ToolWindowFactory {
                 add(titleButton, "TitleOnly")
                 add(expandedPanel, "Expanded")
 
-                titleButton.addActionListener {
+                val switchPanelListener = ActionListener {
                     // Switch between panels
                     if ((layout as CardLayout) == cardLayout) {
                         if (expandedPanel.isVisible) {
-                            cardLayout.show(this, "TitleOnly")
+                            cardLayout.show(this@ExpandablePanel, "TitleOnly")
                         } else {
-                            cardLayout.show(this, "Expanded")
+                            cardLayout.show(this@ExpandablePanel, "Expanded")
                         }
                     }
                     revalidate()
                     repaint()
                 }
-                bodyButton.addActionListener {
-                    // Switch between panels
-                    if ((layout as CardLayout) == cardLayout) {
-                        if (expandedPanel.isVisible) {
-                            cardLayout.show(this, "TitleOnly")
-                        } else {
-                            cardLayout.show(this, "Expanded")
-                        }
-                    }
-                    revalidate()
-                    repaint()
-                }
+
+                titleButton.addActionListener(switchPanelListener)
+                bodyButton.addActionListener(switchPanelListener)
             }
         }
 
@@ -217,6 +209,7 @@ class MyToolWindowFactory : ToolWindowFactory {
             servicePanels.forEach { servicePanel ->
                 mainPanel.add(servicePanel)
             }
+
             return JBScrollPane(mainPanel)
         }
     }

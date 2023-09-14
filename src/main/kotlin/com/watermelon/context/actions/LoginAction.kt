@@ -12,8 +12,9 @@ import java.net.URL
 
 
 class LoginAction : AnAction() {
+    private val backendUrl = "https://app.watermelontools.com"
     private fun sendTokenToAPI(token: String): String {
-        val apiUrl = "https://app.watermelontools.com/api/extension/intellijLogin"
+        val apiUrl = "$backendUrl/api/extension/intellijLogin"
         val url = URL(apiUrl)
         val connection = url.openConnection() as HttpURLConnection
 
@@ -53,7 +54,7 @@ class LoginAction : AnAction() {
 
     override fun actionPerformed(e: AnActionEvent) {
         // Open webpage
-        BrowserUtil.browse("https://app.watermelontools.com/intellij")
+        BrowserUtil.browse("$backendUrl/intellij")
 
         // Open a dialog for user input
         val email = Messages.showPasswordDialog(

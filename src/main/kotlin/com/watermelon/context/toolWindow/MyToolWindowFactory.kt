@@ -21,6 +21,7 @@ import java.net.URL
 import javax.swing.*
 
 class MyToolWindowFactory : ToolWindowFactory {
+
     data class ServiceData(val title: String, val body: String, val link: String? = null)
 
     fun createToolWindowContent(project: Project, toolWindow: ToolWindow, startLine: Int, endLine: Int) {
@@ -45,6 +46,8 @@ class MyToolWindowFactory : ToolWindowFactory {
     override fun shouldBeAvailable(project: Project) = true
 
     class MyToolWindow(toolWindow: ToolWindow) {
+        val backendUrl = "https://app.watermelontools.com"
+
         private val service = toolWindow.project.service<MyProjectService>()
 
         class ExpandablePanel(title: String, body: String) : JPanel() {
@@ -130,7 +133,7 @@ class MyToolWindowFactory : ToolWindowFactory {
 
 
         private fun makeApiCall(commitMessages: List<String>, email: String?, id: String?): JsonObject? {
-            val apiUrl = "http://localhost:3000/api/extension/getContext"
+            val apiUrl = "$backendUrl/api/extension/getContext"
             val url = URL(apiUrl)
             val connection = url.openConnection() as HttpURLConnection
             try {

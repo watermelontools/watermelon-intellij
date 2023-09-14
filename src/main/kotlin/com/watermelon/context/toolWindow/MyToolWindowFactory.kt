@@ -14,6 +14,8 @@ import com.intellij.ide.passwordSafe.PasswordSafe
 import com.intellij.ui.components.JBScrollPane
 import kotlinx.serialization.json.*
 import java.awt.CardLayout
+import java.awt.Dimension
+import java.awt.FlowLayout
 import java.awt.event.ActionListener
 import java.net.HttpURLConnection
 import java.net.URL
@@ -57,10 +59,10 @@ class MyToolWindowFactory : ToolWindowFactory {
                     layout = BoxLayout(this, BoxLayout.Y_AXIS)
                 }
                 titleButton.maximumSize = titleButton.preferredSize
-                expandedPanel.add(titleButton)
                 bodyButton.maximumSize = bodyButton.preferredSize
-                expandedPanel.add(bodyButton)
 
+                expandedPanel.add(titleButton)
+                expandedPanel.add(bodyButton)
                 // Use CardLayout for ExpandablePanel
                 layout = cardLayout
                 add(titleButton, "TitleOnly")
@@ -90,10 +92,13 @@ class MyToolWindowFactory : ToolWindowFactory {
                 layout = BoxLayout(this, BoxLayout.Y_AXIS)
                 border = BorderFactory.createEmptyBorder(10, 10, 10, 10)
 
+                // Create a panel with FlowLayout to hold the titleLabel
+                val titlePanel = JPanel(FlowLayout(FlowLayout.LEFT))
                 val titleLabel = JBLabel(serviceName).apply {
                     font = font.deriveFont(Font.BOLD, 16f)
                 }
-                add(titleLabel)
+                titlePanel.add(titleLabel)
+                add(titlePanel)
 
                 serviceDataArray.forEach { data ->
                     val expandablePanel = ExpandablePanel(data.title, data.body)

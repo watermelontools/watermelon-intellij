@@ -130,11 +130,12 @@ class MyToolWindowFactory : ToolWindowFactory {
         }
 
 
-        private fun makeApiCall(commitMessages: List<String>, email: String?, id: String?): JsonObject? {
+        private fun makeApiCall(commitMessages: List<String>, email: String?, id: String?): Result<JsonObject> {
             val apiUrl = "$backendUrl/api/extension/getContext"
             val url = URL(apiUrl)
             val connection = url.openConnection() as HttpURLConnection
-            try {
+
+            return try {
                 connection.requestMethod = "POST"
                 connection.doOutput = true
                 connection.setRequestProperty("Content-Type", "application/json")
@@ -142,21 +143,26 @@ class MyToolWindowFactory : ToolWindowFactory {
 
                 val commitListJson = commitMessages.joinToString(prefix = "[\"", separator = "\",\"", postfix = "\"]")
                 val payload = """
-        {
-            "email": $email,
-            "id": $id,
-            "repo": "watermelon",
-            "owner": "watermelontools",
-            "commitList": $commitListJson
-        }
-    """.trimIndent()
+            {
+                "email": $email,
+                "id": $id,
+                "repo": "watermelon",
+                "owner": "watermelontools",
+                "commitList": $commitListJson
+            }
+        """.trimIndent()
+
                 connection.outputStream.write(payload.toByteArray())
+
                 val responseCode = connection.responseCode
-                return if (responseCode == HttpURLConnection.HTTP_OK) {
-                    Json.parseToJsonElement(connection.inputStream.reader().readText()).jsonObject
+                if (responseCode == HttpURLConnection.HTTP_OK) {
+                    val jsonResponse = Json.parseToJsonElement(connection.inputStream.reader().readText()).jsonObject
+                    Result.success(jsonResponse)
                 } else {
-                    null
+                    Result.failure(Exception("Server responded with code: $responseCode"))
                 }
+            } catch (e: Exception) {  // catch all exceptions related to I/O or JSON parsing
+                Result.failure(e)
             } finally {
                 connection.disconnect()
             }
@@ -195,57 +201,64 @@ class MyToolWindowFactory : ToolWindowFactory {
             }
 
             val apiResponse = makeApiCall(commitMessages, email, id)
-            val data = apiResponse?.get("data")?.jsonObject
-            val serviceNames = data?.keys?.asSequence()?.map { key: String -> key }?.toList()
-            if (serviceNames != null) {
-                for (serviceName in serviceNames) {
-                    when (val serviceData = data[serviceName]) {
-                        is JsonObject -> {
-                            // Handle JsonObject case
-                        }
+            val data = apiResponse.getOrThrow().get("data")?.jsonObject
+            if (apiResponse.isSuccess) {
+                val serviceNames = data?.keys?.asSequence()?.map { key: String -> key }?.toList()
+                if (serviceNames != null) {
+                    for (serviceName in serviceNames) {
+                        when (val serviceData = data[serviceName]) {
+                            is JsonObject -> {
+                                // Handle JsonObject case
+                            }
 
-                        is JsonArray -> {
-                            if (serviceData.isEmpty()) {
-                                val servicePanel = setupServiceUI(emptyList(), serviceName)
-                                servicePanels = servicePanels + (servicePanel)
-                            } else {
+                            is JsonArray -> {
+                                if (serviceData.isEmpty()) {
+                                    val servicePanel = setupServiceUI(emptyList(), serviceName)
+                                    servicePanels = servicePanels + (servicePanel)
+                                } else {
 
-                                val returnArray = serviceData.map { serviceDataElement ->
-                                    val serviceDataValueJson = serviceDataElement.jsonObject
-                                    val title = serviceDataValueJson["title"]?.jsonPrimitive?.content
-                                    val body = serviceDataValueJson["body"]?.jsonPrimitive?.content
-                                    val link = serviceDataValueJson["link"]?.jsonPrimitive?.content
-                                    ServiceData(title ?: "", body ?: "", link)
+                                    val returnArray = serviceData.map { serviceDataElement ->
+                                        val serviceDataValueJson = serviceDataElement.jsonObject
+                                        val title = serviceDataValueJson["title"]?.jsonPrimitive?.content
+                                        val body = serviceDataValueJson["body"]?.jsonPrimitive?.content
+                                        val link = serviceDataValueJson["link"]?.jsonPrimitive?.content
+                                        ServiceData(title ?: "", body ?: "", link)
+                                    }
+                                    servicePanels = servicePanels + (setupServiceUI(
+                                        returnArray,
+                                        "$serviceName (${serviceData.size})"
+                                    ))
+
                                 }
-                                servicePanels = servicePanels + (setupServiceUI(
-                                    returnArray,
-                                    "$serviceName (${serviceData.size})"
-                                ))
-
                             }
-                        }
 
-                        is JsonPrimitive -> {
-                            val message = serviceData.content
-                            if (message.contains(Regex("no .* token"))) {
+                            is JsonPrimitive -> {
+                                val message = serviceData.content
+                                if (message.contains(Regex("no .* token"))) {
 
-                                servicePanels = servicePanels + (setupServiceUI(emptyList(), serviceName))
+                                    servicePanels = servicePanels + (setupServiceUI(emptyList(), serviceName))
+                                }
                             }
-                        }
 
-                        else -> {
-                            // Handle any other cases if needed
+                            else -> {
+                                // Handle any other cases if needed
+                            }
                         }
                     }
                 }
-            }
-            // add the servicePanels to the UI
-            servicePanels.forEach { servicePanel ->
-                mainPanel.add(servicePanel)
-            }
+                // add the servicePanels to the UI
+                servicePanels.forEach { servicePanel ->
+                    mainPanel.add(servicePanel)
+                }
 
-            return JBScrollPane(mainPanel)
+                return JBScrollPane(mainPanel)
+
+            } else {
+                val error = apiResponse.exceptionOrNull()
+                // Optionally log or show a message to the user
+                val errorPanel = JBPanel<JBPanel<*>>()
+                
+            }
         }
     }
 }
-

@@ -206,9 +206,8 @@ class MyToolWindowFactory : ToolWindowFactory {
 
                         is JsonArray -> {
                             if (serviceData.isEmpty()) {
-                                val commitPanel = setupServiceUI(emptyList(), serviceName)
-                                servicePanels = servicePanels + (commitPanel)
-                                add(commitPanel)
+                                val servicePanel = setupServiceUI(emptyList(), serviceName)
+                                servicePanels = servicePanels + (servicePanel)
                             } else {
 
                                 val returnArray = serviceData.map { serviceDataElement ->
@@ -230,7 +229,7 @@ class MyToolWindowFactory : ToolWindowFactory {
                             val message = serviceData.content
                             if (message.contains(Regex("no .* token"))) {
 
-                                servicePanels = servicePanels + (setupServiceUI(emptyList(), serviceName ?: ""))
+                                servicePanels = servicePanels + (setupServiceUI(emptyList(), serviceName))
                             }
                         }
 

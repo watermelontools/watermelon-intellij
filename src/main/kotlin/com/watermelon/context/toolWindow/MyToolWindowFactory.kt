@@ -56,16 +56,21 @@ class MyToolWindowFactory : ToolWindowFactory {
             }
 
             init {
-                // Assuming the rest of your code remains the same...
-
-                val titleButton = JButton(title)
-
-                val bodyTextArea = JTextArea(body).apply {
-                    wrapStyleWord = true
-                    lineWrap = true
+                val titleTextPane = JTextPane().apply {
+                    contentType = "text/html"
+                    text = "<html><b>\u25B6 $title</b></html>"
                     isEditable = false
                     isOpaque = false
-                    border = null
+                    background = null
+                    font = UIManager.getFont("Button.font")
+                    cursor = Cursor.getPredefinedCursor(Cursor.HAND_CURSOR)
+                }
+
+                val bodyTextPane = JTextPane().apply {
+                    contentType = "text/html"
+                    text = "<html><b>\u25BC $title</b><br>$body</html>"
+                    isEditable = false
+                    isOpaque = false
                     background = null
                     font = UIManager.getFont("Button.font")
                     cursor = Cursor.getPredefinedCursor(Cursor.HAND_CURSOR)
@@ -81,8 +86,8 @@ class MyToolWindowFactory : ToolWindowFactory {
                     maximumSize = Dimension(10, 10)
                 }
 
-                titlePanel.add(titleButton)
-                expandedPanel.add(bodyTextArea)
+                titlePanel.add(titleTextPane)
+                expandedPanel.add(bodyTextPane)
 
 
                 // Use CardLayout for ExpandablePanel
@@ -90,15 +95,16 @@ class MyToolWindowFactory : ToolWindowFactory {
                 add(titlePanel, "TitleOnly")
                 add(expandedPanel, "Expanded")
 
-                val switchPanelListener = ActionListener {
-                    remove(titlePanel)
-                    add(expandedPanel)
-                    revalidate()
-                    repaint()
-                }
 
-                titleButton.addActionListener(switchPanelListener)
-                bodyTextArea.addMouseListener(object : MouseAdapter() {
+                titleTextPane.addMouseListener(object : MouseAdapter() {
+                    override fun mouseClicked(e: MouseEvent?) {
+                        remove(titlePanel)
+                        add(expandedPanel)
+                        revalidate()
+                        repaint()
+                    }
+                })
+                bodyTextPane.addMouseListener(object : MouseAdapter() {
                     override fun mouseClicked(e: MouseEvent?) {
                         if (!link.isNullOrEmpty()) {
                             println("Opening link: $link")

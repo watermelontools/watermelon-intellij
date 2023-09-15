@@ -179,8 +179,6 @@ class MyToolWindowFactory : ToolWindowFactory {
             }
 
             val commitMessages = commitHashes?.map { commitHash -> commitHash.message } ?: listOf<String>()
-            val apiResponse = makeApiCall(commitMessages, email, id)
-            val data = apiResponse?.get("data")?.jsonObject
 
             val commitList = commitHashes?.map { commitHash ->
                 ServiceData(
@@ -190,6 +188,16 @@ class MyToolWindowFactory : ToolWindowFactory {
             }!!
             servicePanels = servicePanels + (setupServiceUI(commitList, "Commits"))
 
+            if (email.isNullOrEmpty() && !id.isNullOrEmpty()) {
+                servicePanels.forEach { servicePanel ->
+                    mainPanel.add(servicePanel)
+                }
+
+                return JBScrollPane(mainPanel)
+            }
+
+            val apiResponse = makeApiCall(commitMessages, email, id)
+            val data = apiResponse?.get("data")?.jsonObject
             val serviceNames = data?.keys?.asSequence()?.map { key: String -> key }?.toList()
             if (serviceNames != null) {
                 for (serviceName in serviceNames) {

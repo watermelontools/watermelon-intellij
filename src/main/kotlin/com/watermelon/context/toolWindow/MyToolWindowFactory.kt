@@ -2,6 +2,7 @@ package com.watermelon.context.toolWindow
 
 import MyProjectService
 import com.intellij.credentialStore.CredentialAttributes
+import com.intellij.ide.BrowserUtil
 import com.intellij.openapi.components.service
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.wm.ToolWindow
@@ -48,7 +49,7 @@ class MyToolWindowFactory : ToolWindowFactory {
 
         private val service = toolWindow.project.service<MyProjectService>()
 
-        class ExpandablePanel(title: String, body: String) : JPanel() {
+        class ExpandablePanel(title: String, body: String, val link: String? = null) : JPanel() {
             private val cardLayout = CardLayout()
             override fun getMaximumSize(): Dimension {
                 return Dimension(parent?.width ?: super.getMaximumSize().width, super.getMaximumSize().height)
@@ -99,6 +100,10 @@ class MyToolWindowFactory : ToolWindowFactory {
                 titleButton.addActionListener(switchPanelListener)
                 bodyTextArea.addMouseListener(object : MouseAdapter() {
                     override fun mouseClicked(e: MouseEvent?) {
+                        if (!link.isNullOrEmpty()) {
+                            println("Opening link: $link")
+                            BrowserUtil.browse(link)
+                        }
                         remove(expandedPanel)
                         add(titlePanel)
                         revalidate()
@@ -123,7 +128,7 @@ class MyToolWindowFactory : ToolWindowFactory {
                 add(titlePanel)
 
                 serviceDataArray.forEach { data ->
-                    val expandablePanel = ExpandablePanel(data.title, data.body)
+                    val expandablePanel = ExpandablePanel(data.title, data.body, data.link)
                     add(expandablePanel)
                 }
             }

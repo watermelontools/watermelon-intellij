@@ -9,6 +9,7 @@ import com.intellij.openapi.ui.Messages
 import kotlinx.serialization.json.*
 import java.net.HttpURLConnection
 import java.net.URL
+import javax.swing.JOptionPane
 
 
 class LoginAction : AnAction() {
@@ -57,11 +58,11 @@ class LoginAction : AnAction() {
         BrowserUtil.browse("$backendUrl/intellij")
 
         // Open a dialog for user input
-        val email = Messages.showPasswordDialog(
-            e.project,
+        val email = JOptionPane.showInputDialog(
+            null,
             "Please enter your email:",
             "Email Input",
-            null
+            JOptionPane.QUESTION_MESSAGE
         )
 
         if (email.isNullOrEmpty()) {

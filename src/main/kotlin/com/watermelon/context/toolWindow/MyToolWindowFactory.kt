@@ -71,24 +71,28 @@ class MyToolWindowFactory : ToolWindowFactory {
                     contentType = "text/html"
                     text = "<html><b>\u25BC $title</b><br>$formattedBody</html>"
                     isEditable = false
-                    isOpaque = false
+                    isOpaque = true
                     background = null
                     font = UIManager.getFont("Button.font")
                     cursor = Cursor.getPredefinedCursor(Cursor.HAND_CURSOR)
                 }
 
-
+                val scrollPane = JBScrollPane(bodyTextPane).apply {
+                    verticalScrollBarPolicy = JScrollPane.VERTICAL_SCROLLBAR_NEVER
+                    horizontalScrollBarPolicy = JScrollPane.HORIZONTAL_SCROLLBAR_NEVER
+                }
                 val titlePanel = JPanel().apply {
                     layout = BoxLayout(this, BoxLayout.Y_AXIS)
                     maximumSize = Dimension(10, 10)
                 }
                 val expandedPanel = JPanel().apply {
                     layout = BoxLayout(this, BoxLayout.Y_AXIS)
+
                     maximumSize = Dimension(10, 10)
                 }
 
                 titlePanel.add(titleTextPane)
-                expandedPanel.add(bodyTextPane)
+                expandedPanel.add(scrollPane)
 
 
                 // Use CardLayout for ExpandablePanel

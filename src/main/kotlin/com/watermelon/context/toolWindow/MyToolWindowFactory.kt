@@ -65,10 +65,11 @@ class MyToolWindowFactory : ToolWindowFactory {
                     font = UIManager.getFont("Button.font")
                     cursor = Cursor.getPredefinedCursor(Cursor.HAND_CURSOR)
                 }
+                val formattedBody = body.replace("\n", "<br>")
 
                 val bodyTextPane = JTextPane().apply {
                     contentType = "text/html"
-                    text = "<html><b>\u25BC $title</b><br>$body</html>"
+                    text = "<html><b>\u25BC $title</b><br>$formattedBody</html>"
                     isEditable = false
                     isOpaque = false
                     background = null

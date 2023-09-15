@@ -1,1 +1,1 @@
-rootProject.name = "watermelon-intellij"
+rootProject.name = "watermelon-context"

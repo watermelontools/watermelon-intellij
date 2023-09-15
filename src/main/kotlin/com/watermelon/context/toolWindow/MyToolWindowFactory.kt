@@ -236,7 +236,15 @@ class MyToolWindowFactory : ToolWindowFactory {
                                 val message = serviceData.content
                                 if (message.contains(Regex("no .* token"))) {
 
-                                    servicePanels = servicePanels + (setupServiceUI(emptyList(), serviceName))
+                                    val emptyTokenPane = ServiceData(
+                                        title = "Please login to $serviceName",
+                                        body = "Click here to login",
+                                        link = "$backendUrl/"
+                                    )
+
+                                    val list: List<ServiceData> = listOf(emptyTokenPane)
+
+                                    servicePanels = servicePanels + (setupServiceUI(list, serviceName))
                                 }
                             }
 
@@ -257,7 +265,7 @@ class MyToolWindowFactory : ToolWindowFactory {
                 val error = apiResponse.exceptionOrNull()
                 // Optionally log or show a message to the user
                 val errorPanel = JBPanel<JBPanel<*>>()
-                
+
             }
         }
     }

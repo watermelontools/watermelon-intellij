@@ -24,7 +24,7 @@ class MyToolWindowFactory : ToolWindowFactory {
 
     data class ServiceData(val title: String, val body: String, val link: String? = null)
 
-    fun createToolWindowContent(project: Project, toolWindow: ToolWindow, startLine: Int, endLine: Int) {
+    private fun createContent(project: Project, toolWindow: ToolWindow, startLine: Int = 0, endLine: Int = 0) {
         // this only runs once
         val myToolWindow = MyToolWindow(toolWindow)
         val content =
@@ -33,14 +33,12 @@ class MyToolWindowFactory : ToolWindowFactory {
         toolWindow.contentManager.addContent(content)
     }
 
-    override fun createToolWindowContent(project: Project, toolWindow: ToolWindow) {
+    fun createToolWindowContent(project: Project, toolWindow: ToolWindow, startLine: Int, endLine: Int) {
+        createContent(project, toolWindow, startLine, endLine)
+    }
 
-        // this only runs once
-        val myToolWindow = MyToolWindow(toolWindow)
-        val content =
-            ContentFactory.getInstance().createContent(myToolWindow.getContent(), null, false)
-        toolWindow.contentManager.removeAllContents(true)
-        toolWindow.contentManager.addContent(content)
+    override fun createToolWindowContent(project: Project, toolWindow: ToolWindow) {
+        createContent(project, toolWindow)
     }
 
     override fun shouldBeAvailable(project: Project) = true

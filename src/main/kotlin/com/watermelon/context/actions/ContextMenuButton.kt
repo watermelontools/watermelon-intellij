@@ -7,7 +7,6 @@ import com.intellij.openapi.wm.ToolWindow
 import com.intellij.openapi.wm.ToolWindowManager
 import com.watermelon.context.toolWindow.MyToolWindowFactory
 import com.watermelon.context.utils.PostHog
-//import com.intellij.ide.util.PropertiesComponent
 import com.intellij.openapi.application.PermanentInstallationID
 
 class ContextMenuButton : AnAction() {

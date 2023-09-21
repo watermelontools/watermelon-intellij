@@ -49,7 +49,7 @@ Watermelon's IntelliJ plugin allows you to obtain business context for a file or
 - You must have Git locally installed (try `git --version` or [install it now](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git))
 
 ## Installation
-Download from the [JetBrains Marketplace](https://plugins.jetbrains.com/plugin/22251-watermelon-intellij-template).
+Download from the [JetBrains Marketplace](https://plugins.jetbrains.com/plugin/22720-watermelon-context).
 
 ## Contributing
 Check out [Contributing.md](CONTRIBUTING.md) and be aware of the [Code of Conduct](CODE_OF_CONDUCT.md)!

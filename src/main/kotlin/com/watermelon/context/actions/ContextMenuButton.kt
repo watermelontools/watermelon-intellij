@@ -6,6 +6,9 @@ import com.intellij.openapi.fileEditor.FileEditorManager
 import com.intellij.openapi.wm.ToolWindow
 import com.intellij.openapi.wm.ToolWindowManager
 import com.watermelon.context.toolWindow.MyToolWindowFactory
+import com.watermelon.context.utils.PostHog
+//import com.intellij.ide.util.PropertiesComponent
+import com.intellij.openapi.application.PermanentInstallationID
 
 class ContextMenuButton : AnAction() {
     override fun actionPerformed(e: AnActionEvent) {
@@ -26,6 +29,10 @@ class ContextMenuButton : AnAction() {
                     toolWindowFactory.createToolWindowContent(project, toolWindow!!, startLine, endLine)
                 }
             }
+
+            val uuid = PermanentInstallationID.get();
+            PostHog.posthog.capture(uuid,
+                "intelliJ:GetCodeContext");
 
             toolWindow?.show {}
         }

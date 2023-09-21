@@ -2,6 +2,7 @@ package com.watermelon.context.toolWindow
 
 import MyProjectService
 import com.intellij.credentialStore.CredentialAttributes
+import com.intellij.ide.BrowserUtil
 import com.intellij.openapi.components.service
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.wm.ToolWindow
@@ -24,7 +25,7 @@ class MyToolWindowFactory : ToolWindowFactory {
 
     data class ServiceData(val title: String, val body: String, val link: String? = null)
 
-    fun createToolWindowContent(project: Project, toolWindow: ToolWindow, startLine: Int, endLine: Int) {
+    private fun createContent(project: Project, toolWindow: ToolWindow, startLine: Int = 0, endLine: Int = 0) {
         // this only runs once
         val myToolWindow = MyToolWindow(toolWindow)
         val content =
@@ -33,14 +34,12 @@ class MyToolWindowFactory : ToolWindowFactory {
         toolWindow.contentManager.addContent(content)
     }
 
-    override fun createToolWindowContent(project: Project, toolWindow: ToolWindow) {
+    fun createToolWindowContent(project: Project, toolWindow: ToolWindow, startLine: Int, endLine: Int) {
+        createContent(project, toolWindow, startLine, endLine)
+    }
 
-        // this only runs once
-        val myToolWindow = MyToolWindow(toolWindow)
-        val content =
-            ContentFactory.getInstance().createContent(myToolWindow.getContent(), null, false)
-        toolWindow.contentManager.removeAllContents(true)
-        toolWindow.contentManager.addContent(content)
+    override fun createToolWindowContent(project: Project, toolWindow: ToolWindow) {
+        createContent(project, toolWindow)
     }
 
     override fun shouldBeAvailable(project: Project) = true
@@ -50,40 +49,50 @@ class MyToolWindowFactory : ToolWindowFactory {
 
         private val service = toolWindow.project.service<MyProjectService>()
 
-        class ExpandablePanel(title: String, body: String) : JPanel() {
+        class ExpandablePanel(title: String, body: String, val link: String? = null) : JPanel() {
             private val cardLayout = CardLayout()
             override fun getMaximumSize(): Dimension {
                 return Dimension(parent?.width ?: super.getMaximumSize().width, super.getMaximumSize().height)
             }
 
             init {
-                // Assuming the rest of your code remains the same...
-
-                val titleButton = JButton(title)
-
-                val bodyTextArea = JTextArea(body).apply {
-                    wrapStyleWord = true
-                    lineWrap = true
+                val titleTextPane = JTextPane().apply {
+                    contentType = "text/html"
+                    text = "<html><b>\u25B6 $title</b></html>"
                     isEditable = false
                     isOpaque = false
-                    border = null
+                    background = null
+                    font = UIManager.getFont("Button.font")
+                    cursor = Cursor.getPredefinedCursor(Cursor.HAND_CURSOR)
+                }
+                val formattedBody = body.replace("\n", "<br>")
+
+                val bodyTextPane = JTextPane().apply {
+                    contentType = "text/html"
+                    text = "<html><b>\u25BC $title</b><br>$formattedBody</html>"
+                    isEditable = false
+                    isOpaque = true
                     background = null
                     font = UIManager.getFont("Button.font")
                     cursor = Cursor.getPredefinedCursor(Cursor.HAND_CURSOR)
                 }
 
-
+                val scrollPane = JBScrollPane(bodyTextPane).apply {
+                    verticalScrollBarPolicy = JScrollPane.VERTICAL_SCROLLBAR_NEVER
+                    horizontalScrollBarPolicy = JScrollPane.HORIZONTAL_SCROLLBAR_NEVER
+                }
                 val titlePanel = JPanel().apply {
                     layout = BoxLayout(this, BoxLayout.Y_AXIS)
                     maximumSize = Dimension(10, 10)
                 }
                 val expandedPanel = JPanel().apply {
                     layout = BoxLayout(this, BoxLayout.Y_AXIS)
+
                     maximumSize = Dimension(10, 10)
                 }
 
-                titlePanel.add(titleButton)
-                expandedPanel.add(bodyTextArea)
+                titlePanel.add(titleTextPane)
+                expandedPanel.add(scrollPane)
 
 
                 // Use CardLayout for ExpandablePanel
@@ -91,16 +100,21 @@ class MyToolWindowFactory : ToolWindowFactory {
                 add(titlePanel, "TitleOnly")
                 add(expandedPanel, "Expanded")
 
-                val switchPanelListener = ActionListener {
-                    remove(titlePanel)
-                    add(expandedPanel)
-                    revalidate()
-                    repaint()
-                }
 
-                titleButton.addActionListener(switchPanelListener)
-                bodyTextArea.addMouseListener(object : MouseAdapter() {
+                titleTextPane.addMouseListener(object : MouseAdapter() {
                     override fun mouseClicked(e: MouseEvent?) {
+                        remove(titlePanel)
+                        add(expandedPanel)
+                        revalidate()
+                        repaint()
+                    }
+                })
+                bodyTextPane.addMouseListener(object : MouseAdapter() {
+                    override fun mouseClicked(e: MouseEvent?) {
+                        if (!link.isNullOrEmpty()) {
+                            println("Opening link: $link")
+                            BrowserUtil.browse(link)
+                        }
                         remove(expandedPanel)
                         add(titlePanel)
                         revalidate()
@@ -125,18 +139,19 @@ class MyToolWindowFactory : ToolWindowFactory {
                 add(titlePanel)
 
                 serviceDataArray.forEach { data ->
-                    val expandablePanel = ExpandablePanel(data.title, data.body)
+                    val expandablePanel = ExpandablePanel(data.title, data.body, data.link)
                     add(expandablePanel)
                 }
             }
         }
 
 
-        private fun makeApiCall(commitMessages: List<String>, email: String?, id: String?): JsonObject? {
+        private fun makeApiCall(commitMessages: List<String>, email: String?, id: String?): Result<JsonObject> {
             val apiUrl = "$backendUrl/api/extension/getContext"
             val url = URL(apiUrl)
             val connection = url.openConnection() as HttpURLConnection
-            try {
+
+            return try {
                 connection.requestMethod = "POST"
                 connection.doOutput = true
                 connection.setRequestProperty("Content-Type", "application/json")
@@ -144,21 +159,26 @@ class MyToolWindowFactory : ToolWindowFactory {
 
                 val commitListJson = commitMessages.joinToString(prefix = "[\"", separator = "\",\"", postfix = "\"]")
                 val payload = """
-        {
-            "email": $email,
-            "id": $id,
-            "repo": "watermelon",
-            "owner": "watermelontools",
-            "commitList": $commitListJson
-        }
-    """.trimIndent()
+            {
+                "email": $email,
+                "id": $id,
+                "repo": "watermelon",
+                "owner": "watermelontools",
+                "commitList": $commitListJson
+            }
+        """.trimIndent()
+
                 connection.outputStream.write(payload.toByteArray())
+
                 val responseCode = connection.responseCode
-                return if (responseCode == HttpURLConnection.HTTP_OK) {
-                    Json.parseToJsonElement(connection.inputStream.reader().readText()).jsonObject
+                if (responseCode == HttpURLConnection.HTTP_OK) {
+                    val jsonResponse = Json.parseToJsonElement(connection.inputStream.reader().readText()).jsonObject
+                    Result.success(jsonResponse)
                 } else {
-                    null
+                    Result.failure(Exception("Server responded with code: $responseCode"))
                 }
+            } catch (e: Exception) {  // catch all exceptions related to I/O or JSON parsing
+                Result.failure(e)
             } finally {
                 connection.disconnect()
             }
@@ -179,8 +199,6 @@ class MyToolWindowFactory : ToolWindowFactory {
             }
 
             val commitMessages = commitHashes?.map { commitHash -> commitHash.message } ?: listOf<String>()
-            val apiResponse = makeApiCall(commitMessages, email, id)
-            val data = apiResponse?.get("data")?.jsonObject
 
             val commitList = commitHashes?.map { commitHash ->
                 ServiceData(
@@ -190,57 +208,81 @@ class MyToolWindowFactory : ToolWindowFactory {
             }!!
             servicePanels = servicePanels + (setupServiceUI(commitList, "Commits"))
 
-            val serviceNames = data?.keys?.asSequence()?.map { key: String -> key }?.toList()
-            if (serviceNames != null) {
-                for (serviceName in serviceNames) {
-                    when (val serviceData = data[serviceName]) {
-                        is JsonObject -> {
-                            // Handle JsonObject case
-                        }
+            if (email.isNullOrEmpty() && !id.isNullOrEmpty()) {
+                servicePanels.forEach { servicePanel ->
+                    mainPanel.add(servicePanel)
+                }
 
-                        is JsonArray -> {
-                            if (serviceData.isEmpty()) {
-                                val commitPanel = setupServiceUI(emptyList(), serviceName)
-                                servicePanels = servicePanels + (commitPanel)
-                                add(commitPanel)
-                            } else {
+                return JBScrollPane(mainPanel)
+            }
 
-                                val returnArray = serviceData.map { serviceDataElement ->
-                                    val serviceDataValueJson = serviceDataElement.jsonObject
-                                    val title = serviceDataValueJson["title"]?.jsonPrimitive?.content
-                                    val body = serviceDataValueJson["body"]?.jsonPrimitive?.content
-                                    val link = serviceDataValueJson["link"]?.jsonPrimitive?.content
-                                    ServiceData(title ?: "", body ?: "", link)
+            val apiResponse = makeApiCall(commitMessages, email, id)
+            val data = apiResponse.getOrThrow().get("data")?.jsonObject
+            if (apiResponse.isSuccess) {
+                val serviceNames = data?.keys?.asSequence()?.map { key: String -> key }?.toList()
+                if (serviceNames != null) {
+                    for (serviceName in serviceNames) {
+                        when (val serviceData = data[serviceName]) {
+                            is JsonObject -> {
+                                // Handle JsonObject case
+                            }
+
+                            is JsonArray -> {
+                                if (serviceData.isEmpty()) {
+                                    val servicePanel = setupServiceUI(emptyList(), serviceName)
+                                    servicePanels = servicePanels + (servicePanel)
+                                } else {
+
+                                    val returnArray = serviceData.map { serviceDataElement ->
+                                        val serviceDataValueJson = serviceDataElement.jsonObject
+                                        val title = serviceDataValueJson["title"]?.jsonPrimitive?.content
+                                        val body = serviceDataValueJson["body"]?.jsonPrimitive?.content
+                                        val link = serviceDataValueJson["link"]?.jsonPrimitive?.content
+                                        ServiceData(title ?: "", body ?: "", link)
+                                    }
+                                    servicePanels = servicePanels + (setupServiceUI(
+                                        returnArray,
+                                        "$serviceName (${serviceData.size})"
+                                    ))
+
                                 }
-                                servicePanels = servicePanels + (setupServiceUI(
-                                    returnArray,
-                                    "$serviceName (${serviceData.size})"
-                                ))
-
                             }
-                        }
 
-                        is JsonPrimitive -> {
-                            val message = serviceData.content
-                            if (message.contains(Regex("no .* token"))) {
+                            is JsonPrimitive -> {
+                                val message = serviceData.content
+                                if (message.contains(Regex("no .* token"))) {
 
-                                servicePanels = servicePanels + (setupServiceUI(emptyList(), serviceName ?: ""))
+                                    val emptyTokenPane = ServiceData(
+                                        title = "Please login to $serviceName",
+                                        body = "Click here to login",
+                                        link = "$backendUrl/"
+                                    )
+
+                                    val list: List<ServiceData> = listOf(emptyTokenPane)
+
+                                    servicePanels = servicePanels + (setupServiceUI(list, serviceName))
+                                }
                             }
-                        }
 
-                        else -> {
-                            // Handle any other cases if needed
+                            else -> {
+                                // Handle any other cases if needed
+                            }
                         }
                     }
                 }
-            }
-            // add the servicePanels to the UI
-            servicePanels.forEach { servicePanel ->
-                mainPanel.add(servicePanel)
-            }
+                // add the servicePanels to the UI
+                servicePanels.forEach { servicePanel ->
+                    mainPanel.add(servicePanel)
+                }
 
-            return JBScrollPane(mainPanel)
+                return JBScrollPane(mainPanel)
+
+            } else {
+                val error = apiResponse.exceptionOrNull()
+                // Optionally log or show a message to the user
+                val errorPanel = JBPanel<JBPanel<*>>()
+
+            }
         }
     }
 }
-

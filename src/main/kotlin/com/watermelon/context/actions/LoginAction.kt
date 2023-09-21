@@ -5,7 +5,9 @@ import com.intellij.ide.BrowserUtil
 import com.intellij.ide.passwordSafe.PasswordSafe
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
+import com.intellij.openapi.application.PermanentInstallationID
 import com.intellij.openapi.ui.Messages
+import com.watermelon.context.utils.PostHog
 import kotlinx.serialization.json.*
 import java.net.HttpURLConnection
 import java.net.URL
@@ -54,6 +56,11 @@ class LoginAction : AnAction() {
     }
 
     override fun actionPerformed(e: AnActionEvent) {
+        // Capture telemetry event
+        val uuid = PermanentInstallationID.get();
+        PostHog.posthog.capture(uuid,
+            "intelliJ:login");
+
         // Open webpage
         BrowserUtil.browse("$backendUrl/intellij")
 

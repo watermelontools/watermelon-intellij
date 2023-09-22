@@ -60,7 +60,7 @@ class MyToolWindowFactory : ToolWindowFactory {
             init {
                 val titleTextPane = JTextPane().apply {
                     contentType = "text/html"
-                    text = "<html>\u25B6 <b>$title</b></html>"
+                    text = "<html>\u25B9 <b>$title</b></html>"
                     isEditable = false
                     isOpaque = false
                     background = null
@@ -71,7 +71,7 @@ class MyToolWindowFactory : ToolWindowFactory {
 
                 val bodyTextPane = JTextPane().apply {
                     contentType = "text/html"
-                    text = "<html>\u25BC <b>$title</b><br>$formattedBody</html>"
+                    text = "<html>\u25BF <b>$title</b><br>$formattedBody</html>"
                     isEditable = false
                     isOpaque = true
                     background = null

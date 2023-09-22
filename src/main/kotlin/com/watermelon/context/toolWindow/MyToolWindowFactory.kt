@@ -96,11 +96,9 @@ class MyToolWindowFactory : ToolWindowFactory {
                 titlePanel.add(titleTextPane)
                 expandedPanel.add(scrollPane)
 
-
                 // Use CardLayout for ExpandablePanel
                 layout = cardLayout
                 add(titlePanel, "TitleOnly")
-                add(expandedPanel, "Expanded")
 
 
                 titleTextPane.addMouseListener(object : MouseAdapter() {
@@ -114,7 +112,6 @@ class MyToolWindowFactory : ToolWindowFactory {
                 bodyTextPane.addMouseListener(object : MouseAdapter() {
                     override fun mouseClicked(e: MouseEvent?) {
                         if (!link.isNullOrEmpty()) {
-                            println("Opening link: $link")
                             BrowserUtil.browse(link)
                         }
                         remove(expandedPanel)

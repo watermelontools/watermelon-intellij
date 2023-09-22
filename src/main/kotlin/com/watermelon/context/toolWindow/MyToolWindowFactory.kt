@@ -259,7 +259,13 @@ class MyToolWindowFactory : ToolWindowFactory {
 
                                 is JsonArray -> {
                                     if (serviceData.isEmpty()) {
-                                        val servicePanel = setupServiceUI(emptyList(), serviceName)
+                                        val noResultsPane = ServiceData(
+                                            title = "No results found in $serviceName",
+                                            body = "Please try again with a different selection"
+                                        )
+                                        val list: List<ServiceData> = listOf(noResultsPane)
+
+                                        val servicePanel = setupServiceUI(list, serviceName)
                                         servicePanels = servicePanels + (servicePanel)
                                     } else {
 

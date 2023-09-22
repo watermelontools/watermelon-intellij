@@ -64,7 +64,7 @@ class MyToolWindowFactory : ToolWindowFactory {
                     isEditable = false
                     isOpaque = false
                     background = null
-                    font = UIManager.getFont("Button.font")
+                    font = UIManager.getFont("Label.font")
                     cursor = Cursor.getPredefinedCursor(Cursor.HAND_CURSOR)
                 }
                 val formattedBody = body.replace("\n", "<br>")
@@ -75,7 +75,7 @@ class MyToolWindowFactory : ToolWindowFactory {
                     isEditable = false
                     isOpaque = true
                     background = null
-                    font = UIManager.getFont("Button.font")
+                    font = UIManager.getFont("Label.font")
                     cursor = Cursor.getPredefinedCursor(Cursor.HAND_CURSOR)
                 }
 

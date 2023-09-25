@@ -2,9 +2,9 @@ package com.watermelon.context.utils
 import com.posthog.java.PostHog
 object PostHog {
 
-    // still need to figure this out
-//    private val POSTHOG_API_KEY = System.getProperties().get("POSTHOG_API_KEY") as String;
-//    private val POSTHOG_HOST = System.getProperties().get("POSTHOG_HOST") as String;
+    // manually insert API key here
+    private val POSTHOG_API_KEY = "POSTHOG_API_KEY";
+    private val POSTHOG_HOST = "POSTHOG_HOST";
 
 
     val posthog = PostHog.Builder(POSTHOG_API_KEY)

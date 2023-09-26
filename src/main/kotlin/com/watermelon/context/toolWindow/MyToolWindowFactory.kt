@@ -21,6 +21,10 @@ import java.net.URL
 import javax.swing.*
 import git4idea.GitUtil
 import git4idea.repo.GitRepository
+import java.awt.Font
+import java.io.IOException
+import java.awt.FontFormatException
+
 
 class MyToolWindowFactory : ToolWindowFactory {
 
@@ -58,6 +62,7 @@ class MyToolWindowFactory : ToolWindowFactory {
             }
 
             init {
+
                 val titleTextPane = JTextPane().apply {
                     contentType = "text/html"
                     text = "<html>\u25B9 <b>$title</b></html>"
@@ -78,7 +83,20 @@ class MyToolWindowFactory : ToolWindowFactory {
                     font = UIManager.getFont("Label.font")
                     cursor = Cursor.getPredefinedCursor(Cursor.HAND_CURSOR)
                 }
-
+                try {
+                    val inputStream =
+                        javaClass.getResourceAsStream("/fonts/Roboto_Mono/RobotoMono-Regular.ttf")
+                    val robotoMonoFont = Font.createFont(Font.TRUETYPE_FONT, inputStream)
+                        .deriveFont(12f) // Adjust the font size as needed
+                    val fontName = robotoMonoFont.fontName
+                    titleTextPane.text = "<html><span style='font-family:$fontName;'>\u25B9 <b>$title</b></span></html>"
+                    bodyTextPane.text =
+                        "<html><span style='font-family:$fontName;'>\u25BF <b>$title</b><br>$formattedBody</span></html>"
+                } catch (e: FontFormatException) {
+                    e.printStackTrace()
+                } catch (e: IOException) {
+                    e.printStackTrace()
+                }
                 val scrollPane = JBScrollPane(bodyTextPane).apply {
                     verticalScrollBarPolicy = JScrollPane.VERTICAL_SCROLLBAR_NEVER
                     horizontalScrollBarPolicy = JScrollPane.HORIZONTAL_SCROLLBAR_NEVER

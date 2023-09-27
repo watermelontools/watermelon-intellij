@@ -11,6 +11,7 @@
 
     <extensions defaultExtensionNs="com.intellij">
         <toolWindow factoryClass="com.watermelon.context.toolWindow.MyToolWindowFactory" id="🍉 Watermelon"/>
+        <documentationProvider implementation="com.watermelon.context.hover.Hover"/>
     </extensions>
 
     <applicationListeners>

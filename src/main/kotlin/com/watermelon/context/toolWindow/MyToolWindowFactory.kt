@@ -21,6 +21,10 @@ import java.net.URL
 import javax.swing.*
 import git4idea.GitUtil
 import git4idea.repo.GitRepository
+import java.awt.Font
+import java.io.IOException
+import java.awt.FontFormatException
+
 
 class MyToolWindowFactory : ToolWindowFactory {
 
@@ -58,27 +62,41 @@ class MyToolWindowFactory : ToolWindowFactory {
             }
 
             init {
+
                 val titleTextPane = JTextPane().apply {
                     contentType = "text/html"
-                    text = "<html>\u25B6 <b>$title</b></html>"
+                    text = "<html>\u25B9 <b>$title</b></html>"
                     isEditable = false
                     isOpaque = false
                     background = null
-                    font = UIManager.getFont("Button.font")
+                    font = UIManager.getFont("Label.font")
                     cursor = Cursor.getPredefinedCursor(Cursor.HAND_CURSOR)
                 }
                 val formattedBody = body.replace("\n", "<br>")
 
                 val bodyTextPane = JTextPane().apply {
                     contentType = "text/html"
-                    text = "<html>\u25BC <b>$title</b><br>$formattedBody</html>"
+                    text = "<html>\u25BF <b>$title</b><br>$formattedBody</html>"
                     isEditable = false
                     isOpaque = true
                     background = null
-                    font = UIManager.getFont("Button.font")
+                    font = UIManager.getFont("Label.font")
                     cursor = Cursor.getPredefinedCursor(Cursor.HAND_CURSOR)
                 }
-
+                try {
+                    val inputStream =
+                        javaClass.getResourceAsStream("/fonts/Roboto_Mono/RobotoMono-Regular.ttf")
+                    val robotoMonoFont = Font.createFont(Font.TRUETYPE_FONT, inputStream)
+                        .deriveFont(12f) // Adjust the font size as needed
+                    val fontName = robotoMonoFont.fontName
+                    titleTextPane.text = "<html><span style='font-family:$fontName;'>\u25B9 <b>$title</b></span></html>"
+                    bodyTextPane.text =
+                        "<html><span style='font-family:$fontName;'>\u25BF <b>$title</b><br>$formattedBody</span></html>"
+                } catch (e: FontFormatException) {
+                    e.printStackTrace()
+                } catch (e: IOException) {
+                    e.printStackTrace()
+                }
                 val scrollPane = JBScrollPane(bodyTextPane).apply {
                     verticalScrollBarPolicy = JScrollPane.VERTICAL_SCROLLBAR_NEVER
                     horizontalScrollBarPolicy = JScrollPane.HORIZONTAL_SCROLLBAR_NEVER
@@ -96,11 +114,9 @@ class MyToolWindowFactory : ToolWindowFactory {
                 titlePanel.add(titleTextPane)
                 expandedPanel.add(scrollPane)
 
-
                 // Use CardLayout for ExpandablePanel
                 layout = cardLayout
                 add(titlePanel, "TitleOnly")
-                add(expandedPanel, "Expanded")
 
 
                 titleTextPane.addMouseListener(object : MouseAdapter() {
@@ -114,7 +130,6 @@ class MyToolWindowFactory : ToolWindowFactory {
                 bodyTextPane.addMouseListener(object : MouseAdapter() {
                     override fun mouseClicked(e: MouseEvent?) {
                         if (!link.isNullOrEmpty()) {
-                            println("Opening link: $link")
                             BrowserUtil.browse(link)
                         }
                         remove(expandedPanel)
@@ -262,7 +277,13 @@ class MyToolWindowFactory : ToolWindowFactory {
 
                                 is JsonArray -> {
                                     if (serviceData.isEmpty()) {
-                                        val servicePanel = setupServiceUI(emptyList(), serviceName)
+                                        val noResultsPane = ServiceData(
+                                            title = "No results found in $serviceName",
+                                            body = "Please try again with a different selection"
+                                        )
+                                        val list: List<ServiceData> = listOf(noResultsPane)
+
+                                        val servicePanel = setupServiceUI(list, serviceName)
                                         servicePanels = servicePanels + (servicePanel)
                                     } else {
 

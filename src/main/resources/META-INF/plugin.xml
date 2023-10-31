@@ -26,7 +26,7 @@
         >
             <add-to-group group-id="EditorPopupMenu" anchor="first"/>
         </action>
-        <group id="WatermelonContextGroup" popup="true" text="Watermelon Context">
+        <group id="WatermelonContextGroup" popup="true" text="Login to Watermelon">
             <add-to-group group-id="EditorPopupMenu" anchor="last"/>
             <action id="myPlugin.MyAction" class="com.watermelon.context.actions.LoginAction"
                     text="Login to Watermelon"

@@ -65,12 +65,6 @@ Alternatively, comment on our issues if you plan to solve one.
 ## Analytics
 Watermelon [doesn't store your code](https://www.watermelontools.com/post/building-a-code-archeology-toolbox-without-storing-your-code). In our commitment to transparency, we made our API (search engine) source-available. 
 
-## Supporters
-
-[![Stargazers repo roster for @watermelontools/watermelon-intellij](https://reporoster.com/stars/watermelontools/watermelon-intellij)](https://github.com/watermelontools/watermelon-intellij/stargazers)
-
-[![Forkers repo roster for @watermelontools/watermelon-intellij](https://reporoster.com/forks/watermelontools/watermelon-intellij)](https://github.com/watermelontools/watermelon-intellij/network/members)
-
 ---
 
 #### About Watermelon

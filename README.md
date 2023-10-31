@@ -11,13 +11,13 @@
 [![Discord](https://img.shields.io/discord/933846506438541492?style=flat-square)](https://discord.com/invite/H4AE6b9442)
 
 <!-- Plugin description -->
-**Watermelon is a Passive Documentation Search Engine** serving both our GitHub app and IDE extensions. Our set of plug-ins help developers understand code context, improve their coding velocity and merge PRs like a breeze.
+**Watermelon is an Open Source Copilot For Code Review**. Our GitHub application allows developers to pre-review GitHub Pull Requests by tracing their code context and performing static code analysis. Using LLMs to detect errors, compare intent to implementation, and give the PR a first health check.
 
-We've built a search algorithm that indexes the most relevant [passive documentation](https://www.watermelontools.com/post/what-is-passive-code-documentation-why-is-it-hard-to-scale-what-to-do-about-it) for a given block of code.
+We've built a search algorithm that indexes the most relevant [code context](https://www.watermelontools.com/post/what-is-passive-code-documentation-why-is-it-hard-to-scale-what-to-do-about-it) for a given block of code.
 
-To obtain business context in your IDE, use this extension.
+To obtain code context in your IDE, use this extension.
 
-To obtain business context in your CI/CD, take a look at our [GitHub Application](https://github.com/watermelontools/watermelon)
+To obtain code context in your CI/CD, take a look at our [GitHub Application](https://github.com/watermelontools/watermelon)
 <!-- Plugin description end -->
 
 ## Integrations

@@ -1,5 +1,7 @@
 package com.watermelon.context.utils
+
 import com.posthog.java.PostHog
+
 object PostHog {
 
     // manually insert API key here
@@ -11,4 +13,7 @@ object PostHog {
         .host(POSTHOG_HOST)
         .build()
 
+    fun capture(uuid: String, event: String) {
+        posthog.capture(uuid, event)
+    }
 }

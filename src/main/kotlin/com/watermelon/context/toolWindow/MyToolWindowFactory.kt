@@ -3,27 +3,25 @@ package com.watermelon.context.toolWindow
 import MyProjectService
 import com.intellij.credentialStore.CredentialAttributes
 import com.intellij.ide.BrowserUtil
+import com.intellij.ide.passwordSafe.PasswordSafe
 import com.intellij.openapi.components.service
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.wm.ToolWindow
 import com.intellij.openapi.wm.ToolWindowFactory
 import com.intellij.ui.components.JBLabel
 import com.intellij.ui.components.JBPanel
-import com.intellij.ui.content.ContentFactory
-import com.intellij.ide.passwordSafe.PasswordSafe
 import com.intellij.ui.components.JBScrollPane
+import com.intellij.ui.content.ContentFactory
+import git4idea.GitUtil
+import git4idea.repo.GitRepository
 import kotlinx.serialization.json.*
 import java.awt.*
 import java.awt.event.MouseAdapter
 import java.awt.event.MouseEvent
+import java.io.IOException
 import java.net.HttpURLConnection
 import java.net.URL
 import javax.swing.*
-import git4idea.GitUtil
-import git4idea.repo.GitRepository
-import java.awt.Font
-import java.io.IOException
-import java.awt.FontFormatException
 
 
 class MyToolWindowFactory : ToolWindowFactory {
@@ -221,7 +219,7 @@ class MyToolWindowFactory : ToolWindowFactory {
                 val commitHashes = if (startLine == 0 && endLine == 0) {
                     service.getGitBlame()
                 } else {
-                    service.getPartialGitBlame(startLine, endLine)
+                    service.getGitBlame(startLine, endLine)
                 }
 
                 fun getCurrentGitRepo(project: Project): GitRepository? {

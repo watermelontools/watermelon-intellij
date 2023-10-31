@@ -46,6 +46,8 @@ Watermelon's IntelliJ plugin allows you to obtain business context for a file or
 - If you build the plugin and it fails, it will be common that running `gradle clean` on your CLI will be the solution
 - To publish the plugin to the JetBrains marketplace: Run the Gradle build task that generates a .zip of the build, then go to https://plugins.jetbrains.com/plugin/add#intellij and upload
 
+![watermelon-intellij-plugin](https://i.ibb.co/9mDzctP/watermelonintellij.png)
+
 ## Requirements
 - You must have Git locally installed (try `git --version` or [install it now](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git))
 

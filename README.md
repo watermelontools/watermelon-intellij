@@ -65,6 +65,8 @@ Alternatively, comment on our issues if you plan to solve one.
 ## Analytics
 Watermelon [doesn't store your code](https://www.watermelontools.com/post/building-a-code-archeology-toolbox-without-storing-your-code). In our commitment to transparency, we made our API (search engine) source-available. 
 
+We use [PostHog Analytics](https://posthog.com/) to track how users interact with Watermelon's IntelliJ Plugin.
+
 ---
 
 #### About Watermelon

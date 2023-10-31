@@ -8,7 +8,8 @@ import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.application.PermanentInstallationID
 import com.intellij.openapi.ui.Messages
 import com.watermelon.context.utils.PostHog
-import kotlinx.serialization.json.*
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.jsonObject
 import java.net.HttpURLConnection
 import java.net.URL
 import javax.swing.JOptionPane
@@ -58,8 +59,10 @@ class LoginAction : AnAction() {
     override fun actionPerformed(e: AnActionEvent) {
         // Capture telemetry event
         val uuid = PermanentInstallationID.get();
-        PostHog.posthog.capture(uuid,
-            "intelliJ:login");
+        PostHog.capture(
+            uuid,
+            "intelliJ:login"
+        );
 
         // Open webpage
         BrowserUtil.browse("$backendUrl/intellij")

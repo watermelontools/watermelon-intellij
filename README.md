@@ -11,13 +11,13 @@
 [![Discord](https://img.shields.io/discord/933846506438541492?style=flat-square)](https://discord.com/invite/H4AE6b9442)
 
 <!-- Plugin description -->
-**Watermelon is a Passive Documentation Search Engine** serving both our GitHub app and IDE extensions. Our set of plug-ins help developers understand code context, improve their coding velocity and merge PRs like a breeze.
+**Watermelon is an Open Source Copilot For Code Review**. Our GitHub application allows developers to pre-review GitHub Pull Requests by tracing their code context and performing static code analysis. Using LLMs to detect errors, compare intent to implementation, and give the PR a first health check.
 
-We've built a search algorithm that indexes the most relevant [passive documentation](https://www.watermelontools.com/post/what-is-passive-code-documentation-why-is-it-hard-to-scale-what-to-do-about-it) for a given block of code.
+We've built a search algorithm that indexes the most relevant [code context](https://www.watermelontools.com/post/what-is-passive-code-documentation-why-is-it-hard-to-scale-what-to-do-about-it) for a given block of code.
 
-To obtain business context in your IDE, use this extension.
+To obtain code context in your IDE, use this extension.
 
-To obtain business context in your CI/CD, take a look at our [GitHub Application](https://github.com/watermelontools/watermelon)
+To obtain code context in your CI/CD, take a look at our [GitHub Application](https://github.com/watermelontools/watermelon)
 <!-- Plugin description end -->
 
 ## Integrations
@@ -26,9 +26,10 @@ We currently support the following integrations
 
 | Watermelon Product | Git                                     | Project Management | Messaging | Documentation |
 |:-------------------|:----------------------------------------| :----------------- | :-------- | :-----------  |
-| IntelliJ           | GitHub (Alpha)                          |                |      |               |
+| IntelliJ           | GitHub, GitLab (Beta), Bitbucket (Beta)                          | Jira               | Slack     | Notion, Confluence              |
 | VS Code            | GitHub, GitLab (Beta), Bitbucket (Beta) | Jira               | Slack     |               |
 | GitHub App         | GitHub.                                 | Jira, Linear               | Slack     | Notion, Confluence        |
+
 ## Features
 
 Watermelon's IntelliJ plugin allows you to obtain business context for a file or block of code via:
@@ -44,6 +45,8 @@ Watermelon's IntelliJ plugin allows you to obtain business context for a file or
 - The Gradle JDK we use is Corretto 19
 - If you build the plugin and it fails, it will be common that running `gradle clean` on your CLI will be the solution
 - To publish the plugin to the JetBrains marketplace: Run the Gradle build task that generates a .zip of the build, then go to https://plugins.jetbrains.com/plugin/add#intellij and upload
+
+![watermelon-intellij-plugin](https://i.ibb.co/9mDzctP/watermelonintellij.png)
 
 ## Requirements
 - You must have Git locally installed (try `git --version` or [install it now](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git))

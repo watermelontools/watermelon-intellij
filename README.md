@@ -26,9 +26,10 @@ We currently support the following integrations
 
 | Watermelon Product | Git                                     | Project Management | Messaging | Documentation |
 |:-------------------|:----------------------------------------| :----------------- | :-------- | :-----------  |
-| IntelliJ           | GitHub (Alpha)                          |                |      |               |
+| IntelliJ           | GitHub, GitLab (Beta), Bitbucket (Beta)                          | Jira               | Slack     | Notion, Confluence              |
 | VS Code            | GitHub, GitLab (Beta), Bitbucket (Beta) | Jira               | Slack     |               |
 | GitHub App         | GitHub.                                 | Jira, Linear               | Slack     | Notion, Confluence        |
+
 ## Features
 
 Watermelon's IntelliJ plugin allows you to obtain business context for a file or block of code via:
